@@ -39,9 +39,119 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* ---------------------------------- */
-        /* HEADER & BOTTOM NAVIGATION        */
-        /* ---------------------------------- */
+        #portal-ingress {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #030712 70%);
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        #portal-ingress.unlock { 
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.1);
+        }
+
+        .portal-brand {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .portal-brand span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portal-subtitle {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 40px;
+        }
+
+        .pin-display-wrapper {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 50px;
+            min-height: 24px;
+            align-items: center;
+        }
+
+        .pin-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(156, 163, 175, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pin-dot.active {
+            background: var(--accent-gradient);
+            border-color: transparent;
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+
+        .pin-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 75px); 
+            gap: 20px; 
+            justify-content: center; 
+        }
+
+        .btn-pin {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            font-size: 1.6rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-pin:active { 
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(0.92);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-pin.action-clear {
+            font-size: 0.9rem;
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.1);
+        }
+        .btn-pin.action-clear:active {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-pin.action-confirm {
+            font-size: 1.3rem;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.1);
+        }
+        .btn-pin.action-confirm:active {
+            background: var(--success);
+            color: white;
+        }
+
         .mobile-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 16px 20px; background: rgba(3, 7, 18, 0.8);
@@ -63,10 +173,8 @@
         .nav-item span { font-size: 1.3rem; }
         .nav-item.active { color: var(--accent); }
 
-        /* ---------------------------------- */
-        /* ESTRUTURA DE LAYOUT MOBILE         */
-        /* ---------------------------------- */
-        .app-container { padding: 16px; opacity: 1; transform: none; transition: all 0.4s ease; }
+        .app-container { padding: 16px; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .app-container.show { opacity: 1; transform: translateY(0); }
 
         .glass-panel {
             background: var(--panel-bg); border: 1px solid var(--border-glow);
@@ -74,7 +182,10 @@
         }
         .panel-title { font-weight: 700; font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 
-        .metrics-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scroll-snap-type: x mandatory; }
+        .metrics-scroll { 
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; 
+            scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; 
+        }
         .metrics-scroll::-webkit-scrollbar { display: none; }
         .m-card {
             flex: 0 0 75%; scroll-snap-align: start; background: var(--panel-bg);
@@ -91,9 +202,9 @@
         
         input, select, textarea {
             background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-glow); color: var(--text-main);
-            padding: 14px; border-radius: 12px; outline: none; font-size: 0.9rem; -webkit-appearance: none;
+            padding: 14px; border-radius: 12px; outline: none; font-size: 0.9rem; -webkit-appearance: none; -moz-appearance: none; appearance: none;
         }
-        .light-theme input, .light-theme select, .light-theme textarea { background: rgba(255,255,255,0.7); }
+        .light-theme input, .light-theme select, .light-theme textarea { background: rgba(255,255,255,0.7); color: #111827; }
 
         .btn-action {
             background: var(--accent-gradient); color: white; border: none; padding: 14px;
@@ -115,9 +226,36 @@
         .toast { background: rgba(17, 24, 39, 0.95); border-left: 4px solid var(--accent); padding: 12px 18px; border-radius: 10px; color: white; font-size: 0.8rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
     </style>
 </head>
-<body onload="initApp()">
+<body>
 
 <div id="notification-center"></div>
+
+<div id="portal-ingress">
+    <div class="portal-brand">Gb<span>Finance</span></div>
+    <p class="portal-subtitle">Acesso seguro à sua conta</p>
+    
+    <div class="pin-display-wrapper" id="pin-dots-container">
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+    </div>
+
+    <div class="pin-grid">
+        <button class="btn-pin" onclick="pressPin('1')">1</button>
+        <button class="btn-pin" onclick="pressPin('2')">2</button>
+        <button class="btn-pin" onclick="pressPin('3')">3</button>
+        <button class="btn-pin" onclick="pressPin('4')">4</button>
+        <button class="btn-pin" onclick="pressPin('5')">5</button>
+        <button class="btn-pin" onclick="pressPin('6')">6</button>
+        <button class="btn-pin" onclick="pressPin('7')">7</button>
+        <button class="btn-pin" onclick="pressPin('8')">8</button>
+        <button class="btn-pin" onclick="pressPin('9')">9</button>
+        <button class="btn-pin action-clear" onclick="clearPin()">Limpar</button>
+        <button class="btn-pin" onclick="pressPin('0')">0</button>
+        <button class="btn-pin action-confirm" onclick="verifyPin()">✓</button>
+    </div>
+</div>
 
 <div class="mobile-header">
     <div style="font-weight: 800; font-size: 1.1rem;">Gb<span style="color: var(--accent);">FINANCE</span></div>
@@ -170,7 +308,7 @@
                 <div class="input-group"><label>Valor (R$)</label><input id="t-val" type="number" step="0.01" placeholder="0.00"></div>
                 <div class="input-group">
                     <label>Natureza</label>
-                    <select id="t-tipo" onchange="updateSubcats()">
+                    <select id="t-tipo" onchange="populateSelectors()">
                         <option value="receita">🟢 Entrada (Crédito)</option>
                         <option value="despesa">🔴 Saída (Débito)</option>
                     </select>
@@ -281,21 +419,49 @@
     ];
 
     const categories = {
-        receita: { "💰 Salário": ["Mensal", "Bônus"], "📈 Investimentos": ["Dividendos"], "🚀 Extras": ["Projetos"] },
-        despesa: { "🍔 Alimentação": ["Mercado", "Delivery"], "🚗 Transporte": ["Combustível", "Uber"], "🏠 Moradia": ["Aluguel", "Luz"], "🎮 Lazer": ["Viagens", "Streaming"] }
+        receita: { "💰 Salário": ["Mensal", "Bônus"], "📈 Investimentos": ["Dividendos"], "🚀 Extras": ["Projetos"], "🔁 Transferência": ["Interna"] },
+        despesa: { "🍔 Alimentação": ["Mercado", "Delivery"], "🚗 Transporte": ["Combustível", "Uber"], "🏠 Moradia": ["Aluguel", "Luz"], "🎮 Lazer": ["Viagens", "Streaming"], "🔁 Transferência": ["Interna"] }
     };
 
     let chartLine = null, chartDonut = null;
+    let currentPinInput = "";
+    const MASTER_PIN = "3008";
 
-    function initApp() { 
-        document.getElementById('t-date').valueAsDate = new Date();
-        document.getElementById('a-venc').valueAsDate = new Date();
-        document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
-        populateSelectors(); 
-        renderApp(); 
-        checkReminders(); 
-    }
+    document.getElementById('t-date').valueAsDate = new Date();
+    document.getElementById('a-venc').valueAsDate = new Date();
+    document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
+
+    function pressPin(num) { if(currentPinInput.length < 4) { currentPinInput += num; updatePinDisplay(); } }
     
+    function clearPin() { 
+        currentPinInput = ""; 
+        updatePinDisplay(); 
+    }
+
+    function updatePinDisplay() { 
+        const dots = document.querySelectorAll("#pin-dots-container .pin-dot");
+        dots.forEach((dot, index) => {
+            if (index < currentPinInput.length) {
+                dot.classList.add("active");
+            } else {
+                dot.classList.remove("active");
+            }
+        });
+    }
+
+    function verifyPin() {
+        if(currentPinInput === MASTER_PIN) {
+            document.getElementById("portal-ingress").classList.add("unlock");
+            document.getElementById("main-app").classList.add("show");
+            pushNotification("Autenticação realizada.");
+            initApp();
+        } else {
+            pushNotification("PIN inválido.");
+            clearPin();
+        }
+    }
+
+    function initApp() { populateSelectors(); renderApp(); checkReminders(); }
     function toggleTheme() { document.body.classList.toggle("light-theme"); }
 
     function switchTab(idx) {
@@ -317,20 +483,22 @@
         const tWallet = document.getElementById("t-wallet");
         const xOrig = document.getElementById("x-origin");
         const xDest = document.getElementById("x-dest");
+        
+        const currentWalletVal = tWallet ? tWallet.value : null;
+        
         if(tWallet && xOrig && xDest) {
-            [tWallet, xOrig, xDest].forEach(s => s.innerHTML = "");
+            tWallet.innerHTML = ""; xOrig.innerHTML = ""; xDest.innerHTML = "";
             wallets.forEach(w => {
                 const op = `<option value="${w.id}">${w.name}</option>`;
                 tWallet.innerHTML += op; xOrig.innerHTML += op; xDest.innerHTML += op;
             });
+            if(currentWalletVal) tWallet.value = currentWalletVal;
         }
-        const tipoSelect = document.getElementById("t-tipo");
-        if(tipoSelect) {
-            const tipo = tipoSelect.value;
-            const tCat = document.getElementById("t-cat"); tCat.innerHTML = "";
-            Object.keys(categories[tipo]).forEach(c => tCat.innerHTML += `<option value="${c}">${c}</option>`);
-            updateSubcats();
-        }
+        
+        const tipo = document.getElementById("t-tipo").value;
+        const tCat = document.getElementById("t-cat"); tCat.innerHTML = "";
+        Object.keys(categories[tipo]).forEach(c => tCat.innerHTML += `<option value="${c}">${c}</option>`);
+        updateSubcats();
     }
 
     function updateSubcats() {
@@ -364,7 +532,7 @@
 
         localStorage.setItem("gb_trans_mob", JSON.stringify(transactions));
         document.getElementById("t-desc").value = ""; document.getElementById("t-val").value = "";
-        renderApp(); pushNotification("Livro razão updated.");
+        renderApp(); pushNotification("Livro razão atualizado.");
     }
 
     function editTrans(id) {
@@ -373,7 +541,9 @@
         document.getElementById("t-desc").value = t.desc;
         document.getElementById("t-val").value = t.valor;
         document.getElementById("t-tipo").value = t.tipo;
+        
         populateSelectors();
+        
         document.getElementById("t-cat").value = t.cat;
         updateSubcats();
         document.getElementById("t-subcat").value = t.subcat;
@@ -452,8 +622,8 @@
         const val = parseFloat(document.getElementById("x-val").value);
         if(orig === dest || isNaN(val) || val <= 0) return alert("Erro na operação.");
 
-        transactions.push({ id: Date.now(), desc: "Transferência Interna (Saída)", valor: val, tipo: "despesa", cat: "📈 Investimentos", subcat: "Transferência", wallet: orig, data: new Date().toISOString().substring(0,10) });
-        transactions.push({ id: Date.now() + 1, desc: "Transferência Interna (Entrada)", valor: val, tipo: "receita", cat: "📈 Investimentos", subcat: "Transferência", wallet: dest, data: new Date().toISOString().substring(0,10) });
+        transactions.push({ id: Date.now(), desc: "Transferência Interna (Saída)", valor: val, tipo: "despesa", cat: "🔁 Transferência", subcat: "Interna", wallet: orig, data: new Date().toISOString().substring(0,10) });
+        transactions.push({ id: Date.now() + 1, desc: "Transferência Interna (Entrada)", valor: val, tipo: "receita", cat: "🔁 Transferência", subcat: "Interna", wallet: dest, data: new Date().toISOString().substring(0,10) });
         localStorage.setItem("gb_trans_mob", JSON.stringify(transactions));
         document.getElementById("x-val").value = "";
         renderApp(); pushNotification("Transferência concluída.");
@@ -469,19 +639,30 @@
         let wSaldos = {};
         wallets.forEach(w => wSaldos[w.id] = w.initial);
 
-        let timeMap = {}; let catMap = {};
+        let timeLabels = [];
+        let timeValues = [];
+        let catMap = {};
         let recMes = 0, desMes = 0;
         const filterMonth = document.getElementById("f-date").value;
         const searchKeyword = document.getElementById("f-search").value.toLowerCase();
 
         transactions.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(t => {
-            if(t.tipo === "receita") { totalNet += t.valor; if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] += t.valor; }
-            else { totalNet -= t.valor; if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] -= t.valor; }
-            timeMap[t.data] = totalNet;
+            if(t.tipo === "receita") { 
+                totalNet += t.valor; 
+                if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] += t.valor; 
+            } else { 
+                totalNet -= t.valor; 
+                if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] -= t.valor; 
+            }
+            
+            timeLabels.push(t.data.split('-').reverse().slice(0,2).join('/'));
+            timeValues.push(totalNet);
 
             if(t.data.startsWith(filterMonth)) {
-                if(t.tipo === "receita") recMes += t.valor;
-                else { desMes += t.valor; catMap[t.cat] = (catMap[t.cat] || 0) + t.valor; }
+                if(t.cat !== "🔁 Transferência") { 
+                    if(t.tipo === "receita") recMes += t.valor;
+                    else { desMes += t.valor; catMap[t.cat] = (catMap[t.cat] || 0) + t.valor; }
+                }
             }
         });
 
@@ -510,8 +691,8 @@
                         ${t.tipo==='receita'?'+':'-'} R$ ${t.valor.toFixed(2)}
                     </span>
                     <div class="actions-area">
-                        <span onclick="editTrans(${t.id})">📝</span>
-                        <span onclick="deleteTrans(${t.id})">❌</span>
+                        <span style="cursor:pointer;" onclick="editTrans(${t.id})">📝</span>
+                        <span style="cursor:pointer;" onclick="deleteTrans(${t.id})">❌</span>
                     </div>
                 </div>
             `;
@@ -558,34 +739,26 @@
             `Este mês acumulou <strong>R$ ${recMes.toFixed(2)}</strong> em ganhos e <strong>R$ ${desMes.toFixed(2)}</strong> em despesas totais.` : 
             "Nenhuma movimentação indexada este mês.";
 
-        renderChartsData(timeMap, catMap);
+        renderChartsData(timeLabels, timeValues, catMap);
     }
 
-    function renderChartsData(timeData, catData) {
+    function renderChartsData(labels, values, catData) {
         const ctxL = document.getElementById('c-timeline').getContext('2d');
         if(chartLine) chartLine.destroy();
-        
-        const labelsL = Object.keys(timeData).length > 0 ? Object.keys(timeData).map(d => d.split('-').reverse().slice(0,2).join('/')) : ["Sem dados"];
-        const dataL = Object.keys(timeData).length > 0 ? Object.values(timeData) : [0];
-
         chartLine = new Chart(ctxL, {
             type: 'line',
             data: {
-                labels: labelsL,
-                datasets: [{ data: dataL, borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 2 }]
+                labels: labels,
+                datasets: [{ data: values, borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 2 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
         const ctxD = document.getElementById('c-categories').getContext('2d');
         if(chartDonut) chartDonut.destroy();
-
-        const labelsD = Object.keys(catData).length > 0 ? Object.keys(catData) : ["Sem custos"];
-        const dataD = Object.keys(catData).length > 0 ? Object.values(catData) : [0];
-
         chartDonut = new Chart(ctxD, {
             type: 'doughnut',
-            data: { labels: labelsD, datasets: [{ data: dataD, backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'] }] },
+            data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'] }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, color: '#9ca3af' } } } }
         });
     }
