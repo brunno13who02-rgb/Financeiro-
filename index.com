@@ -40,122 +40,6 @@
         }
 
         /* ---------------------------------- */
-        /* PORTAL DE SEGURANÇA INOVADOR       */
-        /* ---------------------------------- */
-        #portal-ingress {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #030712 70%);
-            z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        #portal-ingress.unlock { 
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.1);
-        }
-
-        .portal-brand {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .portal-brand span {
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .portal-subtitle {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 40px;
-        }
-
-        .pin-display-wrapper {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 50px;
-            min-height: 24px;
-            align-items: center;
-        }
-
-        .pin-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid rgba(156, 163, 175, 0.4);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pin-dot.active {
-            background: var(--accent-gradient);
-            border-color: transparent;
-            transform: scale(1.2);
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
-        }
-
-        .pin-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 75px); 
-            gap: 20px; 
-            justify-content: center; 
-        }
-
-        .btn-pin {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-main);
-            font-size: 1.6rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.1s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-pin:active { 
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(0.92);
-            border-color: rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-pin.action-clear {
-            font-size: 0.9rem;
-            color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
-            border-color: rgba(239, 68, 68, 0.1);
-        }
-        .btn-pin.action-clear:active {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-pin.action-confirm {
-            font-size: 1.3rem;
-            color: var(--success);
-            background: rgba(16, 185, 129, 0.05);
-            border-color: rgba(16, 185, 129, 0.1);
-        }
-        .btn-pin.action-confirm:active {
-            background: var(--success);
-            color: white;
-        }
-
-        /* ---------------------------------- */
         /* HEADER & BOTTOM NAVIGATION        */
         /* ---------------------------------- */
         .mobile-header {
@@ -182,8 +66,7 @@
         /* ---------------------------------- */
         /* ESTRUTURA DE LAYOUT MOBILE         */
         /* ---------------------------------- */
-        .app-container { padding: 16px; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
-        .app-container.show { opacity: 1; transform: translateY(0); }
+        .app-container { padding: 16px; opacity: 1; transform: none; transition: all 0.4s ease; }
 
         .glass-panel {
             background: var(--panel-bg); border: 1px solid var(--border-glow);
@@ -232,36 +115,9 @@
         .toast { background: rgba(17, 24, 39, 0.95); border-left: 4px solid var(--accent); padding: 12px 18px; border-radius: 10px; color: white; font-size: 0.8rem; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
     </style>
 </head>
-<body>
+<body onload="initApp()">
 
 <div id="notification-center"></div>
-
-<div id="portal-ingress">
-    <div class="portal-brand">Gb<span>Finance</span></div>
-    <p class="portal-subtitle">Acesso seguro à sua conta</p>
-    
-    <div class="pin-display-wrapper" id="pin-dots-container">
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
-    </div>
-
-    <div class="pin-grid">
-        <button class="btn-pin" onclick="pressPin('1')">1</button>
-        <button class="btn-pin" onclick="pressPin('2')">2</button>
-        <button class="btn-pin" onclick="pressPin('3')">3</button>
-        <button class="btn-pin" onclick="pressPin('4')">4</button>
-        <button class="btn-pin" onclick="pressPin('5')">5</button>
-        <button class="btn-pin" onclick="pressPin('6')">6</button>
-        <button class="btn-pin" onclick="pressPin('7')">7</button>
-        <button class="btn-pin" onclick="pressPin('8')">8</button>
-        <button class="btn-pin" onclick="pressPin('9')">9</button>
-        <button class="btn-pin action-clear" onclick="clearPin()">Limpar</button>
-        <button class="btn-pin" onclick="pressPin('0')">0</button>
-        <button class="btn-pin action-confirm" onclick="verifyPin()">✓</button>
-    </div>
-</div>
 
 <div class="mobile-header">
     <div style="font-weight: 800; font-size: 1.1rem;">Gb<span style="color: var(--accent);">FINANCE</span></div>
@@ -430,44 +286,16 @@
     };
 
     let chartLine = null, chartDonut = null;
-    let currentPinInput = "";
-    const MASTER_PIN = "3008";
 
-    document.getElementById('t-date').valueAsDate = new Date();
-    document.getElementById('a-venc').valueAsDate = new Date();
-    document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
-
-    function pressPin(num) { if(currentPinInput.length < 4) { currentPinInput += num; updatePinDisplay(); } }
+    function initApp() { 
+        document.getElementById('t-date').valueAsDate = new Date();
+        document.getElementById('a-venc').valueAsDate = new Date();
+        document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
+        populateSelectors(); 
+        renderApp(); 
+        checkReminders(); 
+    }
     
-    function clearPin() { 
-        currentPinInput = ""; 
-        updatePinDisplay(); 
-    }
-
-    function updatePinDisplay() { 
-        const dots = document.querySelectorAll("#pin-dots-container .pin-dot");
-        dots.forEach((dot, index) => {
-            if (index < currentPinInput.length) {
-                dot.classList.add("active");
-            } else {
-                dot.classList.remove("active");
-            }
-        });
-    }
-
-    function verifyPin() {
-        if(currentPinInput === MASTER_PIN) {
-            document.getElementById("portal-ingress").classList.add("unlock");
-            document.getElementById("main-app").classList.add("show");
-            pushNotification("Autenticação realizada.");
-            initApp();
-        } else {
-            pushNotification("PIN inválido.");
-            clearPin();
-        }
-    }
-
-    function initApp() { populateSelectors(); renderApp(); checkReminders(); }
     function toggleTheme() { document.body.classList.toggle("light-theme"); }
 
     function switchTab(idx) {
@@ -489,15 +317,20 @@
         const tWallet = document.getElementById("t-wallet");
         const xOrig = document.getElementById("x-origin");
         const xDest = document.getElementById("x-dest");
-        [tWallet, xOrig, xDest].forEach(s => s.innerHTML = "");
-        wallets.forEach(w => {
-            const op = `<option value="${w.id}">${w.name}</option>`;
-            tWallet.innerHTML += op; xOrig.innerHTML += op; xDest.innerHTML += op;
-        });
-        const tipo = document.getElementById("t-tipo").value;
-        const tCat = document.getElementById("t-cat"); tCat.innerHTML = "";
-        Object.keys(categories[tipo]).forEach(c => tCat.innerHTML += `<option value="${c}">${c}</option>`);
-        updateSubcats();
+        if(tWallet && xOrig && xDest) {
+            [tWallet, xOrig, xDest].forEach(s => s.innerHTML = "");
+            wallets.forEach(w => {
+                const op = `<option value="${w.id}">${w.name}</option>`;
+                tWallet.innerHTML += op; xOrig.innerHTML += op; xDest.innerHTML += op;
+            });
+        }
+        const tipoSelect = document.getElementById("t-tipo");
+        if(tipoSelect) {
+            const tipo = tipoSelect.value;
+            const tCat = document.getElementById("t-cat"); tCat.innerHTML = "";
+            Object.keys(categories[tipo]).forEach(c => tCat.innerHTML += `<option value="${c}">${c}</option>`);
+            updateSubcats();
+        }
     }
 
     function updateSubcats() {
@@ -531,7 +364,7 @@
 
         localStorage.setItem("gb_trans_mob", JSON.stringify(transactions));
         document.getElementById("t-desc").value = ""; document.getElementById("t-val").value = "";
-        renderApp(); pushNotification("Livro razão atualizado.");
+        renderApp(); pushNotification("Livro razão updated.");
     }
 
     function editTrans(id) {
@@ -547,7 +380,7 @@
         document.getElementById("t-wallet").value = t.wallet;
         document.getElementById("t-date").value = t.data;
         document.getElementById("form-trans-title").innerText = "Editar Transação";
-        window.scrollTo(0,0);
+        switchTab(2);
     }
 
     function deleteTrans(id) {
@@ -731,20 +564,28 @@
     function renderChartsData(timeData, catData) {
         const ctxL = document.getElementById('c-timeline').getContext('2d');
         if(chartLine) chartLine.destroy();
+        
+        const labelsL = Object.keys(timeData).length > 0 ? Object.keys(timeData).map(d => d.split('-').reverse().slice(0,2).join('/')) : ["Sem dados"];
+        const dataL = Object.keys(timeData).length > 0 ? Object.values(timeData) : [0];
+
         chartLine = new Chart(ctxL, {
             type: 'line',
             data: {
-                labels: Object.keys(timeData).map(d => d.split('-').reverse().slice(0,2).join('/')),
-                datasets: [{ data: Object.values(timeData), borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 2 }]
+                labels: labelsL,
+                datasets: [{ data: dataL, borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 2 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
         const ctxD = document.getElementById('c-categories').getContext('2d');
         if(chartDonut) chartDonut.destroy();
+
+        const labelsD = Object.keys(catData).length > 0 ? Object.keys(catData) : ["Sem custos"];
+        const dataD = Object.keys(catData).length > 0 ? Object.values(catData) : [0];
+
         chartDonut = new Chart(ctxD, {
             type: 'doughnut',
-            data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'] }] },
+            data: { labels: labelsD, datasets: [{ data: dataD, backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'] }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 }, color: '#9ca3af' } } } }
         });
     }
