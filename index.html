@@ -295,6 +295,29 @@
         
         <div class="glass-panel">
             <div class="panel-title">Transferência Interna</div>
+            <div class="glass-panel">
+    <div class="panel-title">Backup e Exportação</div>
+
+    <button class="btn-action" onclick="exportBackup()" style="margin-bottom:12px;">
+        📥 Exportar Backup Completo (JSON)
+    </button>
+
+    <button class="btn-action" onclick="document.getElementById('backupFile').click()" style="margin-bottom:12px;">
+        📤 Importar Backup Completo (JSON)
+    </button>
+
+    <input
+        type="file"
+        id="backupFile"
+        accept=".json"
+        style="display:none"
+        onchange="importBackup(event)"
+    >
+
+    <button class="btn-action" onclick="exportCSV()">
+        📊 Exportar Movimentações (CSV)
+    </button>
+</div>
             <div class="form-vertical">
                 <div class="input-group"><label>Origem (Débito)</label><select id="x-origin"></select></div>
                 <div class="input-group"><label>Destino (Crédito)</label><select id="x-dest"></select></div>
@@ -760,6 +783,122 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 }, color: '#9ca3af' } } } }
         });
     }
+    function exportBackup(){
+
+    const backup = {
+        version:1,
+        exportadoEm:new Date().toISOString(),
+        transactions,
+        agenda,
+        wallets
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(backup,null,2)],
+        {type:"application/json"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=`GbFinance_Backup_${new Date().toISOString().substring(0,10)}.json`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    pushNotification("✅ Backup exportado.");
+}
+function importBackup(event){
+
+    const file=event.target.files[0];
+
+    if(!file) return;
+
+    const reader=new FileReader();
+
+    reader.onload=function(e){
+
+        try{
+
+            const data=JSON.parse(e.target.result);
+
+            if(!data.transactions || !data.agenda || !data.wallets){
+                alert("Arquivo inválido.");
+                return;
+            }
+
+            transactions=data.transactions;
+            agenda=data.agenda;
+            wallets=data.wallets;
+
+            localStorage.setItem("gb_trans_mob",JSON.stringify(transactions));
+            localStorage.setItem("gb_agen_mob",JSON.stringify(agenda));
+            localStorage.setItem("gb_wall_mob",JSON.stringify(wallets));
+
+            populateSelectors();
+            renderApp();
+
+            pushNotification("✅ Backup restaurado com sucesso.");
+
+        }catch(err){
+            alert("Erro ao importar backup.");
+        }
+
+    };
+
+    reader.readAsText(file);
+
+    event.target.value="";
+}
+function exportCSV(){
+
+    const linhas=[];
+
+    linhas.push([
+        "Data",
+        "Descrição",
+        "Tipo",
+        "Categoria",
+        "Subcategoria",
+        "Carteira",
+        "Valor"
+    ]);
+
+    transactions.forEach(t=>{
+
+        const carteira=wallets.find(w=>w.id===t.wallet);
+
+        linhas.push([
+            t.data,
+            `"${t.desc}"`,
+            t.tipo,
+            `"${t.cat}"`,
+            `"${t.subcat}"`,
+            `"${carteira?carteira.name:""}"`,
+            t.valor.toFixed(2)
+        ]);
+
+    });
+
+    const csv=linhas.map(l=>l.join(";")).join("\n");
+
+    const blob=new Blob(
+        ["\uFEFF"+csv],
+        {type:"text/csv;charset=utf-8;"}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    const a=document.createElement("a");
+    a.href=url;
+    a.download=`GbFinance_Movimentacoes_${new Date().toISOString().substring(0,10)}.csv`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    pushNotification("📊 CSV exportado.");
+}
 </script>
 </body>
 </html>
