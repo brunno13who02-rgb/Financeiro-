@@ -92,7 +92,7 @@
         .panel-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 
         /* Gráficos */
-        .chart-box { height: 200px; margin-bottom: 10px; position: relative; width: 100%; }
+        .chart-box { height: 220px; margin-bottom: 10px; position: relative; width: 100%; }
 
         /* Formulários Mobile */
         .form-vertical { display: flex; flex-direction: column; gap: 14px; }
@@ -114,8 +114,18 @@
         }
         .btn-action:active { transform: scale(0.98); opacity: 0.9; }
 
-        /* Listas Mobile */
-        .mobile-list { display: flex; flex-direction: column; gap: 12px; }
+        /* Listas Mobile com Rolagem Limitada */
+        .mobile-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            max-height: 420px; 
+            overflow-y: auto; 
+            padding-right: 4px;
+        }
+        .mobile-list::-webkit-scrollbar { width: 4px; }
+        .mobile-list::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+
         .list-card {
             background: rgba(255,255,255,0.02); border: 1px solid var(--border-glow);
             border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center;
@@ -140,7 +150,7 @@
         .nav-item {
             display: flex; flex-direction: column; align-items: center; gap: 4px;
             background: none; border: none; color: var(--text-dim); font-size: 0.7rem;
-            font-weight: 600; width: 22%; cursor: pointer; height: 44px;
+            font-weight: 600; width: 18%; cursor: pointer; height: 44px;
         }
         .nav-item span { font-size: 1.4rem; }
         .nav-item.active { color: var(--accent); }
@@ -169,12 +179,12 @@
             <p style="font-size:0.7rem; color:var(--text-dim); margin-top: 2px;" id="m-proj-total">Previsto: R$ 0,00</p>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--success)">
-            <h4>Receitas (Mês)</h4>
-            <div class="val" style="color:var(--success)" id="m-rec-mes">R$ 0,00</div>
+            <h4 id="m-rec-title">Receitas (Mês)</h4>
+            <div class="val" style="color:var(--success)" id="m-rec-val">R$ 0,00</div>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--danger)">
-            <h4>Despesas (Mês)</h4>
-            <div class="val" style="color:var(--danger)" id="m-des-mes">R$ 0,00</div>
+            <h4 id="m-des-title">Despesas (Mês)</h4>
+            <div class="val" style="color:var(--danger)" id="m-des-val">R$ 0,00</div>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--warning)">
             <h4>Economia</h4>
@@ -185,13 +195,35 @@
     <!-- View: Dashboard -->
     <div id="v-dash">
         <div class="glass-panel">
-            <div class="panel-title">Evolução Patrimonial</div>
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                <span>Evolução Patrimonial</span>
+                <select id="dash-period-mode" onchange="renderApp()" style="width: auto; padding: 6px 10px; font-size: 0.75rem;">
+                    <option value="mensal">Mensal</option>
+                    <option value="anual">Anual</option>
+                </select>
+            </div>
             <div class="chart-box"><canvas id="c-timeline"></canvas></div>
         </div>
+        
         <div class="glass-panel">
-            <div class="panel-title">Distribuição de Custos</div>
+            <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span>Distribuição de Custos</span>
+                <div style="display: flex; gap: 6px;">
+                    <select id="cost-filter-type" onchange="renderApp()" style="width: auto; padding: 6px 10px; font-size: 0.75rem;">
+                        <option value="mes">Mensal</option>
+                        <option value="ano">Anual</option>
+                        <option value="periodo">Personalizado</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Seletor de Período Personalizado para o Gráfico de Custos -->
+            <div id="custom-cost-dates" style="display: none; gap: 8px; margin-bottom: 12px;">
+                <input type="date" id="cost-start-date" onchange="renderApp()" style="font-size: 0.8rem; padding: 8px;">
+                <input type="date" id="cost-end-date" onchange="renderApp()" style="font-size: 0.8rem; padding: 8px;">
+            </div>
             <div class="chart-box"><canvas id="c-categories"></canvas></div>
         </div>
+
         <div class="glass-panel">
             <div class="panel-title">Resumo de Auditoria</div>
             <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;" id="quick-summary-text">Carregando métricas líquidas...</p>
@@ -227,6 +259,7 @@
                 <input id="f-search" style="flex:1; padding:12px; font-size:0.9rem;" placeholder="Filtrar nome..." oninput="renderApp()">
                 <input id="f-date" style="width:130px; padding:12px; font-size:0.9rem;" type="month" onchange="renderApp()">
             </div>
+            <!-- Lista com rolagem e ordem invertida (mais recentes primeiro) -->
             <div class="mobile-list" id="t-cards-container"></div>
         </div>
     </div>
@@ -295,35 +328,29 @@
         
         <div class="glass-panel">
             <div class="panel-title">Transferência Interna</div>
-            <div class="glass-panel">
-    <div class="panel-title">Backup e Exportação</div>
-
-    <button class="btn-action" onclick="exportBackup()" style="margin-bottom:12px;">
-        📥 Exportar Backup Completo (JSON)
-    </button>
-
-    <button class="btn-action" onclick="document.getElementById('backupFile').click()" style="margin-bottom:12px;">
-        📤 Importar Backup Completo (JSON)
-    </button>
-
-    <input
-        type="file"
-        id="backupFile"
-        accept=".json"
-        style="display:none"
-        onchange="importBackup(event)"
-    >
-
-    <button class="btn-action" onclick="exportCSV()">
-        📊 Exportar Movimentações (CSV)
-    </button>
-</div>
             <div class="form-vertical">
                 <div class="input-group"><label>Origem (Débito)</label><select id="x-origin"></select></div>
                 <div class="input-group"><label>Destino (Crédito)</label><select id="x-dest"></select></div>
                 <div class="input-group"><label>Valor (R$)</label><input id="x-val" type="number" step="0.01" inputmode="decimal" placeholder="0.00"></div>
                 <button class="btn-action" onclick="executeTransfer()">Executar Repasse</button>
             </div>
+        </div>
+    </div>
+
+    <!-- View: Configuração -->
+    <div id="v-config" style="display:none">
+        <div class="glass-panel">
+            <div class="panel-title">Backup e Exportação</div>
+            <button class="btn-action" onclick="exportBackup()" style="margin-bottom:12px;">
+                📥 Exportar Backup Completo (JSON)
+            </button>
+            <button class="btn-action" onclick="document.getElementById('backupFile').click()" style="margin-bottom:12px;">
+                📤 Importar Backup Completo (JSON)
+            </button>
+            <input type="file" id="backupFile" accept=".json" style="display:none" onchange="importBackup(event)">
+            <button class="btn-action" onclick="exportCSV()">
+                📊 Exportar Movimentações (CSV)
+            </button>
         </div>
     </div>
 </div>
@@ -334,6 +361,7 @@
     <button class="nav-item" id="nb-2" onclick="switchTab(2)"><span>💸</span>Lançar</button>
     <button class="nav-item" id="nb-3" onclick="switchTab(3)"><span>📅</span>Agenda</button>
     <button class="nav-item" id="nb-4" onclick="switchTab(4)"><span>💳</span>Contas</button>
+    <button class="nav-item" id="nb-5" onclick="switchTab(5)"><span>⚙️</span>Config</button>
 </div>
 
 <script>
@@ -345,138 +373,40 @@
     ];
 
     const categories = {
-    receita: {
-        "💼 Trabalho": [
-            "Salário",
-            "13º Salário",
-            "Férias"
-        ],
+        receita: {
+            "💼 Trabalho": ["Salário", "13º Salário", "Férias"],
+            "💰 Renda Extra": ["Freelance", "Bicos", "Serviços Prestados", "Vendas"],
+            "🎁 Outros Ganhos": ["Presentes Recebidos", "Pix Recebidas"],
+            "🔁 Transferência": ["Interna"]
+        },
+        despesa: {
+            "🏠 Moradia": ["Parcela compra", "Aluguel", "Condomínio", "Água", "Energia Elétrica", "Gás", "Internet", "Telefone", "IPTU", "Manutenção"],
+            "🍽️ Alimentação": ["Supermercado", "Padaria", "Açougue", "Restaurante", "Lanchonete", "Delivery", "Bebidas"],
+            "🚗 Transporte": ["Combustível", "Estacionamento", "Pedágio", "Manutenção", "Seguro", "IPVA", "Ônibus", "Táxi", "Aplicativo de Transporte"],
+            "🏥 Saúde": ["Consulta Médica", "Dentista", "Psicólogo", "Exames", "Medicamentos", "Plano de Saúde"],
+            "📚 Educação": ["Escola", "Faculdade", "Cursos", "Livros", "Material Escolar"],
+            "👕 Vestuário": ["Roupas", "Calçados", "Acessórios"],
+            "🛒 Compras": ["Eletrônicos", "Móveis", "Eletrodomésticos", "Decoração"],
+            "🎮 Lazer e Entretenimento": ["Cinema", "Jogos", "Passeios", "Viagens", "Eventos"],
+            "📺 Assinaturas": ["Streaming", "Música", "Aplicativos", "Armazenamento em Nuvem"],
+            "💳 Financeiro": ["Fatura Cartão de Crédito", "Empréstimos", "Financiamentos", "Tarifas Bancárias", "Juros"],
+            "📦 Outros": ["Gastos Diversos", "Emergências", "Imprevistos"],
+            "🔁 Transferência": ["Interna"]
+        }
+    };
 
-        "💰 Renda Extra": [
-            "Freelance",
-            "Bicos",
-            "Serviços Prestados",
-            "Vendas"
-        ],
+    let chartLine = null, chartBar = null;
 
-        "🎁 Outros Ganhos": [
-            "Presentes Recebidos",
-            "Pix Recebidas"
-        ],
-
-        "🔁 Transferência": [
-            "Interna"
-        ]
-    },
-
-    despesa: {
-        "🏠 Moradia": [
-            "Parcela compra",
-            "Aluguel",
-            "Condomínio",
-            "Água",
-            "Energia Elétrica",
-            "Gás",
-            "Internet",
-            "Telefone",
-            "IPTU",
-            "Manutenção"
-        ],
-
-        "🍽️ Alimentação": [
-            "Supermercado",
-            "Padaria",
-            "Açougue",
-            "Restaurante",
-            "Lanchonete",
-            "Delivery",
-            "Bebidas"
-        ],
-
-        "🚗 Transporte": [
-            "Combustível",
-            "Estacionamento",
-            "Pedágio",
-            "Manutenção",
-            "Seguro",
-            "IPVA",
-            "Ônibus",
-            "Táxi",
-            "Aplicativo de Transporte"
-        ],
-
-        "🏥 Saúde": [
-            "Consulta Médica",
-            "Dentista",
-            "Psicólogo",
-            "Exames",
-            "Medicamentos",
-            "Plano de Saúde"
-        ],
-
-        "📚 Educação": [
-            "Escola",
-            "Faculdade",
-            "Cursos",
-            "Livros",
-            "Material Escolar"
-        ],
-
-        "👕 Vestuário": [
-            "Roupas",
-            "Calçados",
-            "Acessórios"
-        ],
-
-        "🛒 Compras": [
-            "Eletrônicos",
-            "Móveis",
-            "Eletrodomésticos",
-            "Decoração"
-        ],
-
-        "🎮 Lazer e Entretenimento": [
-            "Cinema",
-            "Jogos",
-            "Passeios",
-            "Viagens",
-            "Eventos"
-        ],
-
-        "📺 Assinaturas": [
-            "Streaming",
-            "Música",
-            "Aplicativos",
-            "Armazenamento em Nuvem"
-        ],
-
-        "💳 Financeiro": [
-            "Fatura Cartão de Crédito",
-            "Empréstimos",
-            "Financiamentos",
-            "Tarifas Bancárias",
-            "Juros"
-        ],
-
-        "📦 Outros": [
-            "Gastos Diversos",
-            "Emergências",
-            "Imprevistos"
-        ],
-
-        "🔁 Transferência": [
-            "Interna"
-        ]
-    }
-};
-
-    let chartLine = null, chartDonut = null;
-
-    // Executa assim que a página termina de carregar
     window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('t-date').valueAsDate = new Date();
         document.getElementById('a-venc').valueAsDate = new Date();
         document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
+        
+        // Inicializar datas padrão para o filtro customizado
+        const todayStr = new Date().toISOString().substring(0, 10);
+        document.getElementById('cost-start-date').value = todayStr.substring(0, 8) + '01';
+        document.getElementById('cost-end-date').value = todayStr;
+
         initApp();
     });
 
@@ -493,7 +423,8 @@
         document.getElementById("v-trans").style.display = idx === 2 ? "block" : "none";
         document.getElementById("v-agenda").style.display = idx === 3 ? "block" : "none";
         document.getElementById("v-wallets").style.display = idx === 4 ? "block" : "none";
-        for(let i=1; i<=4; i++) document.getElementById(`nb-${i}`).classList.toggle("active", i === idx);
+        document.getElementById("v-config").style.display = idx === 5 ? "block" : "none";
+        for(let i=1; i<=5; i++) document.getElementById(`nb-${i}`).classList.toggle("active", i === idx);
         window.scrollTo(0,0);
     }
 
@@ -660,13 +591,15 @@
         let wSaldos = {};
         wallets.forEach(w => wSaldos[w.id] = w.initial);
 
-        let timeLabels = [];
-        let timeValues = [];
-        let catMap = {};
-        let recMes = 0, desMes = 0;
-        const filterMonth = document.getElementById("f-date").value;
+        const filterMonth = document.getElementById("f-date").value; // Formato YYYY-MM
+        const currentYearStr = new Date().getFullYear().toString();
         const searchKeyword = document.getElementById("f-search").value.toLowerCase();
+        const dashPeriodMode = document.getElementById("dash-period-mode").value; // 'mensal' ou 'anual'
 
+        let recMes = 0, desMes = 0;
+        let recAno = 0, desAno = 0;
+
+        // Cálculos gerais e de período atual
         transactions.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(t => {
             if(t.tipo === "receita") { 
                 totalNet += t.valor; 
@@ -676,28 +609,48 @@
                 if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] -= t.valor; 
             }
             
-            timeLabels.push(t.data.split('-').reverse().slice(0,2).join('/'));
-            timeValues.push(totalNet);
-
-            if(t.data.startsWith(filterMonth)) {
+            // Totais do Mês Selecionado (ou padrão atual)
+            if(filterMonth && t.data.startsWith(filterMonth)) {
                 if(t.cat !== "🔁 Transferência") { 
                     if(t.tipo === "receita") recMes += t.valor;
-                    else { desMes += t.valor; catMap[t.cat] = (catMap[t.cat] || 0) + t.valor; }
+                    else desMes += t.valor;
+                }
+            }
+
+            // Totais do Ano Atual
+            if(t.data.startsWith(currentYearStr)) {
+                if(t.cat !== "🔁 Transferência") {
+                    if(t.tipo === "receita") recAno += t.valor;
+                    else desAno += t.valor;
                 }
             }
         });
 
+        // Atualizar textos dos cards dependendo da visão do Dashboard
+        if(dashPeriodMode === 'anual') {
+            document.getElementById("m-rec-title").innerText = "Receitas (Ano)";
+            document.getElementById("m-rec-val").innerText = `R$ ${recAno.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-des-title").innerText = "Despesas (Ano)";
+            document.getElementById("m-des-val").innerText = `R$ ${desAno.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-taxa-eco").innerText = `${(recAno > 0 ? ((recAno - desAno) / recAno) * 100 : 0).toFixed(0)}%`;
+        } else {
+            document.getElementById("m-rec-title").innerText = "Receitas (Mês)";
+            document.getElementById("m-rec-val").innerText = `R$ ${recMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-des-title").innerText = "Despesas (Mês)";
+            document.getElementById("m-des-val").innerText = `R$ ${desMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-taxa-eco").innerText = `${(recMes > 0 ? ((recMes - desMes) / recMes) * 100 : 0).toFixed(0)}%`;
+        }
+
         document.getElementById("m-saldo-total").innerText = `R$ ${totalNet.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-        document.getElementById("m-rec-mes").innerText = `R$ ${recMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-        document.getElementById("m-des-mes").innerText = `R$ ${desMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
-        document.getElementById("m-taxa-eco").innerText = `${(recMes > 0 ? ((recMes - desMes) / recMes) * 100 : 0).toFixed(0)}%`;
 
         let pInc = 0, pOut = 0;
         agenda.forEach(a => { if(a.status === "Pendente") { if(a.tipo === "receita") pInc += a.valor; else pOut += a.valor; } });
         document.getElementById("m-proj-total").innerText = `Previsto: R$ ${(totalNet + pInc - pOut).toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
 
+        // Histórico Geral de Transações (Ordem Invertida: Mais recentes primeiro)
         const tContainer = document.getElementById("t-cards-container"); tContainer.innerHTML = "";
-        transactions.forEach(t => {
+        let sortedTransactions = [...transactions].reverse();
+        sortedTransactions.forEach(t => {
             if(searchKeyword && !t.desc.toLowerCase().includes(searchKeyword)) return;
             if(filterMonth && !t.data.startsWith(filterMonth)) return;
 
@@ -760,145 +713,185 @@
             `Este mês acumulou <strong>R$ ${recMes.toFixed(2)}</strong> em ganhos e <strong>R$ ${desMes.toFixed(2)}</strong> em despesas totais.` : 
             "Nenhuma movimentação indexada este mês.";
 
-        renderChartsData(timeLabels, timeValues, catMap);
+        renderCharts(dashPeriodMode, filterMonth);
     }
 
-    function renderChartsData(labels, values, catData) {
+    function renderCharts(dashPeriodMode, filterMonth) {
+        // --- Gráfico de Linha (Evolução Patrimonial) ---
+        let timeLabels = [];
+        let timeValues = [];
+        let runningTotal = 0;
+
+        if(dashPeriodMode === 'anual') {
+            // Agrupar por Ano
+            let yearlyMap = {};
+            transactions.forEach(t => {
+                let ano = t.data.substring(0, 4);
+                if(!yearlyMap[ano]) yearlyMap[ano] = 0;
+                if(t.tipo === 'receita') yearlyMap[ano] += t.valor;
+                else yearlyMap[ano] -= t.valor;
+            });
+            let sortedAnos = Object.keys(yearlyMap).sort();
+            sortedAnos.forEach(ano => {
+                runningTotal += yearlyMap[ano];
+                timeLabels.push(ano);
+                timeValues.push(runningTotal);
+            });
+        } else {
+            // Agrupar por Data Específica (Mensal/Geral)
+            transactions.forEach(t => {
+                if(t.tipo === 'receita') runningTotal += t.valor;
+                else runningTotal -= t.valor;
+                
+                timeLabels.push(t.data.split('-').reverse().slice(0,2).join('/'));
+                timeValues.push(runningTotal);
+            });
+        }
+
         const ctxL = document.getElementById('c-timeline').getContext('2d');
-        if(chartLine) chartLine.destroy();
-        chartLine = new Chart(ctxL, {
+        if(window.chartLineInstance) window.chartLineInstance.destroy();
+        window.chartLineInstance = new Chart(ctxL, {
             type: 'line',
             data: {
-                labels: labels,
-                datasets: [{ data: values, borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 1 }]
+                labels: timeLabels,
+                datasets: [{ data: timeValues, borderColor: '#6366f1', borderWidth: 2, fill: false, tension: 0.2, pointRadius: 2 }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
-        const ctxD = document.getElementById('c-categories').getContext('2d');
-        if(chartDonut) chartDonut.destroy();
-        chartDonut = new Chart(ctxD, {
-            type: 'doughnut',
-            data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'] }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 }, color: '#9ca3af' } } } }
+        // --- Gráfico de Barras (Distribuição de Custos) ---
+        const costFilterType = document.getElementById('cost-filter-type').value;
+        const customDateBox = document.getElementById('custom-cost-dates');
+        customDateBox.style.display = costFilterType === 'periodo' ? 'flex' : 'none';
+
+        let catMap = {};
+        transactions.forEach(t => {
+            if(t.tipo === 'despesa' && t.cat !== '🔁 Transferência') {
+                let match = false;
+                if(costFilterType === 'mes') {
+                    if(t.data.startsWith(filterMonth)) match = true;
+                } else if(costFilterType === 'ano') {
+                    let currentYear = new Date().getFullYear().toString();
+                    if(t.data.startsWith(currentYear)) match = true;
+                } else if(costFilterType === 'periodo') {
+                    let start = document.getElementById('cost-start-date').value;
+                    let end = document.getElementById('cost-end-date').value;
+                    if(start && end && t.data >= start && t.data <= end) match = true;
+                }
+
+                if(match) {
+                    catMap[t.cat] = (catMap[t.cat] || 0) + t.valor;
+                }
+            }
+        });
+
+        const ctxB = document.getElementById('c-categories').getContext('2d');
+        if(chartBar) chartBar.destroy();
+        chartBar = new Chart(ctxB, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(catMap),
+                datasets: [{
+                    label: 'Gastos (R$)',
+                    data: Object.values(catMap),
+                    backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#14b8a6'],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` R$ ${context.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { ticks: { font: { size: 10 }, color: '#9ca3af' }, grid: { display: false } },
+                    y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
         });
     }
+
     function exportBackup(){
+        const backup = {
+            version:1,
+            exportadoEm:new Date().toISOString(),
+            transactions,
+            agenda,
+            wallets
+        };
+        const blob = new Blob([JSON.stringify(backup,null,2)], {type:"application/json"});
+        const url = URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url;
+        a.download=`GbFinance_Backup_${new Date().toISOString().substring(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        pushNotification("✅ Backup exportado.");
+    }
 
-    const backup = {
-        version:1,
-        exportadoEm:new Date().toISOString(),
-        transactions,
-        agenda,
-        wallets
-    };
+    function importBackup(event){
+        const file=event.target.files[0];
+        if(!file) return;
+        const reader=new FileReader();
+        reader.onload=function(e){
+            try{
+                const data=JSON.parse(e.target.result);
+                if(!data.transactions || !data.agenda || !data.wallets){
+                    alert("Arquivo inválido.");
+                    return;
+                }
+                transactions=data.transactions;
+                agenda=data.agenda;
+                wallets=data.wallets;
 
-    const blob = new Blob(
-        [JSON.stringify(backup,null,2)],
-        {type:"application/json"}
-    );
+                localStorage.setItem("gb_trans_mob",JSON.stringify(transactions));
+                localStorage.setItem("gb_agen_mob",JSON.stringify(agenda));
+                localStorage.setItem("gb_wall_mob",JSON.stringify(wallets));
 
-    const url = URL.createObjectURL(blob);
-
-    const a=document.createElement("a");
-    a.href=url;
-    a.download=`GbFinance_Backup_${new Date().toISOString().substring(0,10)}.json`;
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-    pushNotification("✅ Backup exportado.");
-}
-function importBackup(event){
-
-    const file=event.target.files[0];
-
-    if(!file) return;
-
-    const reader=new FileReader();
-
-    reader.onload=function(e){
-
-        try{
-
-            const data=JSON.parse(e.target.result);
-
-            if(!data.transactions || !data.agenda || !data.wallets){
-                alert("Arquivo inválido.");
-                return;
+                populateSelectors();
+                renderApp();
+                pushNotification("✅ Backup restaurado com sucesso.");
+            }catch(err){
+                alert("Erro ao importar backup.");
             }
+        };
+        reader.readAsText(file);
+        event.target.value="";
+    }
 
-            transactions=data.transactions;
-            agenda=data.agenda;
-            wallets=data.wallets;
-
-            localStorage.setItem("gb_trans_mob",JSON.stringify(transactions));
-            localStorage.setItem("gb_agen_mob",JSON.stringify(agenda));
-            localStorage.setItem("gb_wall_mob",JSON.stringify(wallets));
-
-            populateSelectors();
-            renderApp();
-
-            pushNotification("✅ Backup restaurado com sucesso.");
-
-        }catch(err){
-            alert("Erro ao importar backup.");
-        }
-
-    };
-
-    reader.readAsText(file);
-
-    event.target.value="";
-}
-function exportCSV(){
-
-    const linhas=[];
-
-    linhas.push([
-        "Data",
-        "Descrição",
-        "Tipo",
-        "Categoria",
-        "Subcategoria",
-        "Carteira",
-        "Valor"
-    ]);
-
-    transactions.forEach(t=>{
-
-        const carteira=wallets.find(w=>w.id===t.wallet);
-
-        linhas.push([
-            t.data,
-            `"${t.desc}"`,
-            t.tipo,
-            `"${t.cat}"`,
-            `"${t.subcat}"`,
-            `"${carteira?carteira.name:""}"`,
-            t.valor.toFixed(2)
-        ]);
-
-    });
-
-    const csv=linhas.map(l=>l.join(";")).join("\n");
-
-    const blob=new Blob(
-        ["\uFEFF"+csv],
-        {type:"text/csv;charset=utf-8;"}
-    );
-
-    const url=URL.createObjectURL(blob);
-
-    const a=document.createElement("a");
-    a.href=url;
-    a.download=`GbFinance_Movimentacoes_${new Date().toISOString().substring(0,10)}.csv`;
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-    pushNotification("📊 CSV exportado.");
-}
+    function exportCSV(){
+        const linhas=[];
+        linhas.push(["Data", "Descrição", "Tipo", "Categoria", "Subcategoria", "Carteira", "Valor"]);
+        transactions.forEach(t=>{
+            const carteira=wallets.find(w=>w.id===t.wallet);
+            linhas.push([
+                t.data,
+                `"${t.desc}"`,
+                t.tipo,
+                `"${t.cat}"`,
+                `"${t.subcat}"`,
+                `"${carteira?carteira.name:""}"`,
+                t.valor.toFixed(2)
+            ]);
+        });
+        const csv=linhas.map(l=>l.join(";")).join("\n");
+        const blob=new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url;
+        a.download=`GbFinance_Movimentacoes_${new Date().toISOString().substring(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        pushNotification("📊 CSV exportado.");
+    }
 </script>
 </body>
 </html>
