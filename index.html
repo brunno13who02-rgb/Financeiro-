@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GbFinance Mobile</title>
+    <title>GbFinance Mobile Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -84,6 +84,7 @@
         }
         .m-card h4 { font-size: 0.7rem; text-transform: uppercase; color: var(--text-dim); letter-spacing: 0.5px; }
         .m-card .val { font-size: 1.6rem; font-weight: 800; margin-top: 4px; }
+        .m-card .sub-info { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
 
         .glass-panel {
             background: var(--panel-bg); border: 1px solid var(--border-glow);
@@ -92,7 +93,7 @@
         .panel-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 
         /* Gráficos */
-        .chart-box { height: 220px; margin-bottom: 10px; position: relative; width: 100%; }
+        .chart-box { height: 220px; margin-bottom: 10px; position: relative; width: 100%; cursor: pointer; }
 
         /* Formulários Mobile */
         .form-vertical { display: flex; flex-direction: column; gap: 14px; }
@@ -114,14 +115,19 @@
         }
         .btn-action:active { transform: scale(0.98); opacity: 0.9; }
 
+        /* Botão Flutuante (FAB) */
+        .fab-btn {
+            position: fixed; right: 20px; bottom: 85px; width: 56px; height: 56px;
+            border-radius: 50%; background: var(--accent-gradient); color: white;
+            border: none; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); z-index: 999; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .fab-btn:active { transform: scale(0.9); }
+
         /* Listas Mobile com Rolagem Limitada */
         .mobile-list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            max-height: 420px; 
-            overflow-y: auto; 
-            padding-right: 4px;
+            display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; padding-right: 4px;
         }
         .mobile-list::-webkit-scrollbar { width: 4px; }
         .mobile-list::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
@@ -137,7 +143,13 @@
         .list-card-right .amt { font-size: 1rem; font-weight: 700; }
         .actions-area { display: flex; gap: 16px; font-size: 1.2rem; margin-top: 2px; }
 
-        /* Barra de Navegação Inferior Nativa */
+        /* Tags Badge */
+        .tag-badge {
+            display: inline-block; background: rgba(99, 102, 241, 0.15); color: var(--accent);
+            font-size: 0.65rem; padding: 2px 6px; border-radius: 6px; font-weight: 600; margin-top: 4px; margin-right: 4px;
+        }
+
+        /* Barra de Navegação Inferior Nativa (6 abas) */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; 
             height: calc(65px + env(safe-area-inset-bottom));
@@ -148,11 +160,11 @@
         .light-theme .bottom-nav { background: rgba(243, 244, 246, 0.92); }
         
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            background: none; border: none; color: var(--text-dim); font-size: 0.7rem;
-            font-weight: 600; width: 18%; cursor: pointer; height: 44px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            background: none; border: none; color: var(--text-dim); font-size: 0.6rem;
+            font-weight: 600; width: 16.66%; cursor: pointer; height: 44px;
         }
-        .nav-item span { font-size: 1.4rem; }
+        .nav-item span { font-size: 1.2rem; }
         .nav-item.active { color: var(--accent); }
 
         /* Notificações Push */
@@ -166,34 +178,48 @@
 
 <div class="mobile-header">
     <div style="font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px;">Gb<span style="color: var(--accent);">FINANCE</span></div>
-    <button class="btn-action" style="padding: 8px 14px; font-size:0.7rem; border-radius: 10px; width: auto;" onclick="toggleTheme()">🎨 TEMA</button>
+    <div style="display: flex; gap: 8px;">
+        <button class="btn-action" style="padding: 8px 10px; font-size:0.7rem; border-radius: 10px; width: auto; background: rgba(255,255,255,0.05);" onclick="togglePrivacy()" id="btn-privacy">👁️</button>
+        <button class="btn-action" style="padding: 8px 12px; font-size:0.7rem; border-radius: 10px; width: auto;" onclick="toggleTheme()">🎨</button>
+    </div>
 </div>
+
+<button class="fab-btn" onclick="switchTab(2)">+</button>
 
 <div class="app-container" id="main-app">
     
-    <!-- Cards de Rolagem Horizontal Lateral -->
+    <!-- Carrossel de Métricas -->
     <div class="metrics-scroll">
         <div class="m-card" style="border-left: 4px solid var(--accent)">
             <h4>Saldo Total</h4>
-            <div class="val" id="m-saldo-total">R$ 0,00</div>
-            <p style="font-size:0.7rem; color:var(--text-dim); margin-top: 2px;" id="m-proj-total">Previsto: R$ 0,00</p>
+            <div class="val priv-val" id="m-saldo-total">R$ 0,00</div>
+            <p class="sub-info" id="m-proj-total">Previsto: R$ 0,00</p>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--success)">
             <h4 id="m-rec-title">Receitas (Mês)</h4>
-            <div class="val" style="color:var(--success)" id="m-rec-val">R$ 0,00</div>
+            <div class="val priv-val" style="color:var(--success)" id="m-rec-val">R$ 0,00</div>
+            <p class="sub-info" id="m-rec-var">vs. mês anterior: 0%</p>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--danger)">
             <h4 id="m-des-title">Despesas (Mês)</h4>
-            <div class="val" style="color:var(--danger)" id="m-des-val">R$ 0,00</div>
+            <div class="val priv-val" style="color:var(--danger)" id="m-des-val">R$ 0,00</div>
+            <p class="sub-info" id="m-des-var">vs. mês anterior: 0%</p>
         </div>
         <div class="m-card" style="border-left: 4px solid var(--warning)">
             <h4>Economia</h4>
             <div class="val" style="color:var(--warning)" id="m-taxa-eco">0%</div>
+            <p class="sub-info">Taxa de poupança</p>
         </div>
     </div>
 
     <!-- View: Dashboard -->
     <div id="v-dash">
+        <!-- Insights Financeiros Contextuais -->
+        <div class="glass-panel" id="insights-panel" style="background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.05) 100%);">
+            <div class="panel-title" style="margin-bottom: 8px; font-size: 0.95rem;">💡 Insights Inteligentes</div>
+            <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.4;" id="insight-text">Analisando dados financeiros...</p>
+        </div>
+
         <div class="glass-panel">
             <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                 <span>Evolução Patrimonial</span>
@@ -207,7 +233,7 @@
         
         <div class="glass-panel">
             <div class="panel-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <span>Distribuição de Custos</span>
+                <span>Distribuição de Custos (Toque p/ Drilldown)</span>
                 <div style="display: flex; gap: 6px;">
                     <select id="cost-filter-type" onchange="renderApp()" style="width: auto; padding: 6px 10px; font-size: 0.75rem;">
                         <option value="mes">Mensal</option>
@@ -216,7 +242,6 @@
                     </select>
                 </div>
             </div>
-            <!-- Seletor de Período Personalizado para o Gráfico de Custos -->
             <div id="custom-cost-dates" style="display: none; gap: 8px; margin-bottom: 12px;">
                 <input type="date" id="cost-start-date" onchange="renderApp()" style="font-size: 0.8rem; padding: 8px;">
                 <input type="date" id="cost-end-date" onchange="renderApp()" style="font-size: 0.8rem; padding: 8px;">
@@ -233,7 +258,10 @@
     <!-- View: Lançar Transação -->
     <div id="v-trans" style="display:none">
         <div class="glass-panel">
-            <div class="panel-title" id="form-trans-title">Nova Transação</div>
+            <div class="panel-title" id="form-trans-title">
+                <span>Nova Transação</span>
+                <button type="button" onclick="startVoiceInput()" style="background:var(--accent); border:none; color:white; padding:6px 12px; border-radius:8px; font-size:0.75rem; cursor:pointer;">🎤 Voz</button>
+            </div>
             <div class="form-vertical">
                 <input type="hidden" id="t-id" value="-1">
                 <div class="input-group"><label>Descrição</label><input id="t-desc" placeholder="Ex: Combustível"></div>
@@ -248,6 +276,7 @@
                 <div class="input-group"><label>Categoria</label><select id="t-cat" onchange="updateSubcats()"></select></div>
                 <div class="input-group"><label>Subcategoria</label><select id="t-subcat"></select></div>
                 <div class="input-group"><label>Carteira Destino</label><select id="t-wallet"></select></div>
+                <div class="input-group"><label>Tags (separadas por vírgula)</label><input id="t-tags" placeholder="ex: fixo, urgente, uber"></div>
                 <div class="input-group"><label>Data</label><input id="t-date" type="date"></div>
                 <button class="btn-action" onclick="saveTransaction()">Consolidar Lançamento</button>
             </div>
@@ -256,10 +285,9 @@
         <div class="glass-panel">
             <div class="panel-title">Histórico Geral</div>
             <div style="display:flex; gap:10px; margin-bottom: 14px;">
-                <input id="f-search" style="flex:1; padding:12px; font-size:0.9rem;" placeholder="Filtrar nome..." oninput="renderApp()">
+                <input id="f-search" style="flex:1; padding:12px; font-size:0.9rem;" placeholder="Filtrar nome/tag..." oninput="renderApp()">
                 <input id="f-date" style="width:130px; padding:12px; font-size:0.9rem;" type="month" onchange="renderApp()">
             </div>
-            <!-- Lista com rolagem e ordem invertida (mais recentes primeiro) -->
             <div class="mobile-list" id="t-cards-container"></div>
         </div>
     </div>
@@ -295,7 +323,23 @@
         </div>
 
         <div class="glass-panel">
-            <div class="panel-title">Agenda Cronológica</div>
+            <div class="panel-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <span>Agenda Cronológica</span>
+                <div style="display:flex; gap:6px;">
+                    <select id="a-filter-status" onchange="renderApp()" style="width:auto; padding:6px 8px; font-size:0.75rem;">
+                        <option value="todos">Todos</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="atrasado">Atrasados</option>
+                        <option value="pago">Pagos</option>
+                    </select>
+                    <select id="a-sort-order" onchange="renderApp()" style="width:auto; padding:6px 8px; font-size:0.75rem;">
+                        <option value="venc-asc">Vencimento (Mais Próximo)</option>
+                        <option value="venc-desc">Vencimento (Mais Distante)</option>
+                        <option value="val-desc">Maior Valor</option>
+                        <option value="val-asc">Menor Valor</option>
+                    </select>
+                </div>
+            </div>
             <div class="mobile-list" id="a-cards-container"></div>
         </div>
     </div>
@@ -337,6 +381,25 @@
         </div>
     </div>
 
+    <!-- View: Metas de Economia (Cofrinhos) -->
+    <div id="v-goals" style="display:none">
+        <div class="glass-panel">
+            <div class="panel-title">Metas de Economia (Cofrinhos)</div>
+            <div class="mobile-list" id="g-cards-container"></div>
+        </div>
+
+        <div class="glass-panel">
+            <div class="panel-title">Criar Nova Meta</div>
+            <div class="form-vertical">
+                <div class="input-group"><label>Nome da Meta</label><input id="g-name" placeholder="Ex: Viagem de Férias"></div>
+                <div class="input-group"><label>Valor Alvo (R$)</label><input id="g-target" type="number" step="0.01" inputmode="decimal" placeholder="5000.00"></div>
+                <div class="input-group"><label>Valor Já Guardado (R$)</label><input id="g-current" type="number" step="0.01" inputmode="decimal" value="0.00"></div>
+                <div class="input-group"><label>Prazo Limite</label><input id="g-deadline" type="date"></div>
+                <button class="btn-action" onclick="saveGoal()">Criar Meta</button>
+            </div>
+        </div>
+    </div>
+
     <!-- View: Configuração -->
     <div id="v-config" style="display:none">
         <div class="glass-panel">
@@ -355,13 +418,14 @@
     </div>
 </div>
 
-<!-- Bottom Navigation Bar -->
+<!-- Bottom Navigation Bar (6 Abas) -->
 <div class="bottom-nav">
-    <button class="nav-item active" id="nb-1" onclick="switchTab(1)"><span>📊</span>Dashboard</button>
+    <button class="nav-item active" id="nb-1" onclick="switchTab(1)"><span>📊</span>Dash</button>
     <button class="nav-item" id="nb-2" onclick="switchTab(2)"><span>💸</span>Lançar</button>
     <button class="nav-item" id="nb-3" onclick="switchTab(3)"><span>📅</span>Agenda</button>
     <button class="nav-item" id="nb-4" onclick="switchTab(4)"><span>💳</span>Contas</button>
-    <button class="nav-item" id="nb-5" onclick="switchTab(5)"><span>⚙️</span>Config</button>
+    <button class="nav-item" id="nb-5" onclick="switchTab(5)"><span>🏆</span>Metas</button>
+    <button class="nav-item" id="nb-6" onclick="switchTab(6)"><span>⚙️</span>Config</button>
 </div>
 
 <script>
@@ -371,6 +435,8 @@
         { id: "w1", name: "Conta Corrente", type: "Conta Corrente", initial: 0 },
         { id: "w2", name: "Dinheiro Físico", type: "Carteira Física", initial: 0 }
     ];
+    let goals = JSON.parse(localStorage.getItem("gb_goals_mob")) || [];
+    let privacyMode = false;
 
     const categories = {
         receita: {
@@ -400,9 +466,9 @@
     window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('t-date').valueAsDate = new Date();
         document.getElementById('a-venc').valueAsDate = new Date();
+        document.getElementById('g-deadline').valueAsDate = new Date();
         document.getElementById('f-date').value = new Date().toISOString().substring(0, 7);
         
-        // Inicializar datas padrão para o filtro customizado
         const todayStr = new Date().toISOString().substring(0, 10);
         document.getElementById('cost-start-date').value = todayStr.substring(0, 8) + '01';
         document.getElementById('cost-end-date').value = todayStr;
@@ -418,13 +484,25 @@
     
     function toggleTheme() { document.body.classList.toggle("light-theme"); }
 
+    function togglePrivacy() {
+        privacyMode = !privacyMode;
+        document.getElementById("btn-privacy").style.opacity = privacyMode ? "1" : "0.6";
+        renderApp();
+    }
+
+    function formatMoney(val) {
+        if(privacyMode) return "R$ •••••";
+        return `R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+    }
+
     function switchTab(idx) {
         document.getElementById("v-dash").style.display = idx === 1 ? "block" : "none";
         document.getElementById("v-trans").style.display = idx === 2 ? "block" : "none";
         document.getElementById("v-agenda").style.display = idx === 3 ? "block" : "none";
         document.getElementById("v-wallets").style.display = idx === 4 ? "block" : "none";
-        document.getElementById("v-config").style.display = idx === 5 ? "block" : "none";
-        for(let i=1; i<=5; i++) document.getElementById(`nb-${i}`).classList.toggle("active", i === idx);
+        document.getElementById("v-goals").style.display = idx === 5 ? "block" : "none";
+        document.getElementById("v-config").style.display = idx === 6 ? "block" : "none";
+        for(let i=1; i<=6; i++) document.getElementById(`nb-${i}`).classList.toggle("active", i === idx);
         window.scrollTo(0,0);
     }
 
@@ -462,6 +540,42 @@
         if(categories[tipo][cat]) { categories[tipo][cat].forEach(s => tSub.innerHTML += `<option value="${s}">${s}</option>`); }
     }
 
+    /* Entrada por Comando de Voz */
+    function startVoiceInput() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SpeechRecognition) {
+            alert("Seu navegador não suporta reconhecimento de voz.");
+            return;
+        }
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'pt-BR';
+        recognition.start();
+        pushNotification("🎤 Ouvindo... Diga algo como 'Gastei 50 reais em mercado'");
+        
+        recognition.onresult = function(event) {
+            const speechText = event.results[0][0].transcript.toLowerCase();
+            document.getElementById("t-desc").value = speechText;
+            
+            // Tentar extrair número/valor da fala
+            const numbers = speechText.match(/\d+([.,]\d+)?/g);
+            if(numbers && numbers.length > 0) {
+                let valStr = numbers[0].replace(',', '.');
+                document.getElementById("t-val").value = parseFloat(valStr);
+            }
+            if(speechText.includes("recebi") || speechText.includes("ganhei") || speechText.includes("salário")) {
+                document.getElementById("t-tipo").value = "receita";
+                populateSelectors();
+            } else {
+                document.getElementById("t-tipo").value = "despesa";
+                populateSelectors();
+            }
+            pushNotification("✅ Áudio processado!");
+        };
+        recognition.onerror = function() {
+            pushNotification("❌ Erro ao capturar voz.");
+        };
+    }
+
     function saveTransaction() {
         const id = parseInt(document.getElementById("t-id").value);
         const desc = document.getElementById("t-desc").value.trim();
@@ -470,23 +584,28 @@
         const cat = document.getElementById("t-cat").value;
         const subcat = document.getElementById("t-subcat").value;
         const wallet = document.getElementById("t-wallet").value;
+        const tagsInput = document.getElementById("t-tags").value;
+        const tags = tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(t => t.length > 0) : [];
         const data = document.getElementById("t-date").value;
 
         if(!desc || isNaN(valor) || valor <= 0) return alert("Preencha os dados corretamente.");
 
-        const obj = { id: id > -1 ? id : Date.now(), desc, valor, tipo, cat, subcat, wallet, data };
+        const obj = { id: id > -1 ? id : Date.now(), desc, valor, tipo, cat, subcat, wallet, tags, data };
 
         if(id > -1) {
             transactions[transactions.findIndex(t => t.id === id)] = obj;
             document.getElementById("t-id").value = "-1";
-            document.getElementById("form-trans-title").innerText = "Nova Transação";
+            document.getElementById("form-trans-title").querySelector("span").innerText = "Nova Transação";
         } else {
             transactions.push(obj);
         }
 
         localStorage.setItem("gb_trans_mob", JSON.stringify(transactions));
-        document.getElementById("t-desc").value = ""; document.getElementById("t-val").value = "";
-        renderApp(); pushNotification("Livro razão atualizado.");
+        document.getElementById("t-desc").value = ""; 
+        document.getElementById("t-val").value = ""; 
+        document.getElementById("t-tags").value = "";
+        renderApp(); 
+        pushNotification("Livro razão atualizado.");
     }
 
     function editTrans(id) {
@@ -500,8 +619,9 @@
         updateSubcats();
         document.getElementById("t-subcat").value = t.subcat;
         document.getElementById("t-wallet").value = t.wallet;
+        document.getElementById("t-tags").value = t.tags ? t.tags.join(', ') : '';
         document.getElementById("t-date").value = t.data;
-        document.getElementById("form-trans-title").innerText = "Editar Transação";
+        document.getElementById("form-trans-title").querySelector("span").innerText = "Editar Transação";
         switchTab(2);
     }
 
@@ -540,7 +660,7 @@
         transactions.push({
             id: Date.now(), desc: `[LIQ] ${item.desc}`, valor: item.valor, tipo: item.tipo,
             cat: item.tipo === "receita" ? "💰 Salário" : "🏠 Moradia", subcat: "Mensal",
-            wallet: wallets[0].id, data: new Date().toISOString().substring(0,10)
+            wallet: wallets[0].id, tags: ["agenda"], data: new Date().toISOString().substring(0,10)
         });
         if(item.rec === "mensal") {
             let d = new Date(item.venc + 'T00:00:00'); d.setMonth(d.getMonth() + 1);
@@ -568,14 +688,46 @@
         populateSelectors(); renderApp(); pushNotification("Carteira registrada.");
     }
 
+    function saveGoal() {
+        const name = document.getElementById("g-name").value.trim();
+        const target = parseFloat(document.getElementById("g-target").value);
+        const current = parseFloat(document.getElementById("g-current").value) || 0;
+        const deadline = document.getElementById("g-deadline").value;
+        if(!name || isNaN(target)) return alert("Preencha os dados da meta.");
+
+        goals.push({ id: Date.now(), name, target, current, deadline });
+        localStorage.setItem("gb_goals_mob", JSON.stringify(goals));
+        document.getElementById("g-name").value = "";
+        document.getElementById("g-target").value = "";
+        renderApp();
+        pushNotification("🏆 Meta criada com sucesso!");
+    }
+
+    function addGoalValue(id, amount) {
+        const g = goals.find(item => item.id === id);
+        if(g) {
+            g.current += amount;
+            if(g.current < 0) g.current = 0;
+            localStorage.setItem("gb_goals_mob", JSON.stringify(goals));
+            renderApp();
+            pushNotification("Cofrinho atualizado!");
+        }
+    }
+
+    function removeGoal(id) {
+        goals = goals.filter(g => g.id !== id);
+        localStorage.setItem("gb_goals_mob", JSON.stringify(goals));
+        renderApp();
+    }
+
     function executeTransfer() {
         const orig = document.getElementById("x-origin").value;
         const dest = document.getElementById("x-dest").value;
         const val = parseFloat(document.getElementById("x-val").value);
         if(orig === dest || isNaN(val) || val <= 0) return alert("Erro na operação.");
 
-        transactions.push({ id: Date.now(), desc: "Transferência Interna (Saída)", valor: val, tipo: "despesa", cat: "🔁 Transferência", subcat: "Interna", wallet: orig, data: new Date().toISOString().substring(0,10) });
-        transactions.push({ id: Date.now() + 1, desc: "Transferência Interna (Entrada)", valor: val, tipo: "receita", cat: "🔁 Transferência", subcat: "Interna", wallet: dest, data: new Date().toISOString().substring(0,10) });
+        transactions.push({ id: Date.now(), desc: "Transferência Interna (Saída)", valor: val, tipo: "despesa", cat: "🔁 Transferência", subcat: "Interna", wallet: orig, tags: ["transferencia"], data: new Date().toISOString().substring(0,10) });
+        transactions.push({ id: Date.now() + 1, desc: "Transferência Interna (Entrada)", valor: val, tipo: "receita", cat: "🔁 Transferência", subcat: "Interna", wallet: dest, tags: ["transferencia"], data: new Date().toISOString().substring(0,10) });
         localStorage.setItem("gb_trans_mob", JSON.stringify(transactions));
         document.getElementById("x-val").value = "";
         renderApp(); pushNotification("Transferência concluída.");
@@ -591,15 +743,22 @@
         let wSaldos = {};
         wallets.forEach(w => wSaldos[w.id] = w.initial);
 
-        const filterMonth = document.getElementById("f-date").value; // Formato YYYY-MM
+        const filterMonth = document.getElementById("f-date").value; // YYYY-MM
         const currentYearStr = new Date().getFullYear().toString();
         const searchKeyword = document.getElementById("f-search").value.toLowerCase();
-        const dashPeriodMode = document.getElementById("dash-period-mode").value; // 'mensal' ou 'anual'
+        const dashPeriodMode = document.getElementById("dash-period-mode").value; 
+
+        // Cálculo de Mês Anterior para Indicadores de Variação
+        let [fYear, fMonth] = filterMonth ? filterMonth.split('-').map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1];
+        let prevMonth = fMonth - 1;
+        let prevYear = fYear;
+        if(prevMonth === 0) { prevMonth = 12; prevYear -= 1; }
+        let prevMonthStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}`;
 
         let recMes = 0, desMes = 0;
+        let recPrev = 0, desPrev = 0;
         let recAno = 0, desAno = 0;
 
-        // Cálculos gerais e de período atual
         transactions.sort((a,b) => new Date(a.data) - new Date(b.data)).forEach(t => {
             if(t.tipo === "receita") { 
                 totalNet += t.valor; 
@@ -609,7 +768,6 @@
                 if(wSaldos[t.wallet] !== undefined) wSaldos[t.wallet] -= t.valor; 
             }
             
-            // Totais do Mês Selecionado (ou padrão atual)
             if(filterMonth && t.data.startsWith(filterMonth)) {
                 if(t.cat !== "🔁 Transferência") { 
                     if(t.tipo === "receita") recMes += t.valor;
@@ -617,7 +775,13 @@
                 }
             }
 
-            // Totais do Ano Atual
+            if(t.data.startsWith(prevMonthStr)) {
+                if(t.cat !== "🔁 Transferência") {
+                    if(t.tipo === "receita") recPrev += t.valor;
+                    else desPrev += t.valor;
+                }
+            }
+
             if(t.data.startsWith(currentYearStr)) {
                 if(t.cat !== "🔁 Transferência") {
                     if(t.tipo === "receita") recAno += t.valor;
@@ -626,43 +790,66 @@
             }
         });
 
-        // Atualizar textos dos cards dependendo da visão do Dashboard
+        // Cálculo de Variação Percentual vs Mês Anterior
+        const recVar = recPrev > 0 ? ((recMes - recPrev) / recPrev) * 100 : (recMes > 0 ? 100 : 0);
+        const desVar = desPrev > 0 ? ((desMes - desPrev) / desPrev) * 100 : (desMes > 0 ? 100 : 0);
+
+        document.getElementById("m-rec-var").innerHTML = `<span style="color:${recVar>=0?'var(--success)':'var(--danger)'}">${recVar>=0?'+':''}${recVar.toFixed(0)}%</span> vs mês ant.`;
+        document.getElementById("m-des-var").innerHTML = `<span style="color:${desVar<=0?'var(--success)':'var(--danger)'}">${desVar>=0?'+':''}${desVar.toFixed(0)}%</span> vs mês ant.`;
+
         if(dashPeriodMode === 'anual') {
             document.getElementById("m-rec-title").innerText = "Receitas (Ano)";
-            document.getElementById("m-rec-val").innerText = `R$ ${recAno.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-rec-val").innerText = formatMoney(recAno);
             document.getElementById("m-des-title").innerText = "Despesas (Ano)";
-            document.getElementById("m-des-val").innerText = `R$ ${desAno.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-des-val").innerText = formatMoney(desAno);
             document.getElementById("m-taxa-eco").innerText = `${(recAno > 0 ? ((recAno - desAno) / recAno) * 100 : 0).toFixed(0)}%`;
         } else {
             document.getElementById("m-rec-title").innerText = "Receitas (Mês)";
-            document.getElementById("m-rec-val").innerText = `R$ ${recMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-rec-val").innerText = formatMoney(recMes);
             document.getElementById("m-des-title").innerText = "Despesas (Mês)";
-            document.getElementById("m-des-val").innerText = `R$ ${desMes.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+            document.getElementById("m-des-val").innerText = formatMoney(desMes);
             document.getElementById("m-taxa-eco").innerText = `${(recMes > 0 ? ((recMes - desMes) / recMes) * 100 : 0).toFixed(0)}%`;
         }
 
-        document.getElementById("m-saldo-total").innerText = `R$ ${totalNet.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById("m-saldo-total").innerText = formatMoney(totalNet);
 
         let pInc = 0, pOut = 0;
         agenda.forEach(a => { if(a.status === "Pendente") { if(a.tipo === "receita") pInc += a.valor; else pOut += a.valor; } });
-        document.getElementById("m-proj-total").innerText = `Previsto: R$ ${(totalNet + pInc - pOut).toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+        document.getElementById("m-proj-total").innerText = `Previsto: ${formatMoney(totalNet + pInc - pOut)}`;
 
-        // Histórico Geral de Transações (Ordem Invertida: Mais recentes primeiro)
+        // Gerar Insights Financeiros Contextuais
+        let insightMsg = "Suas finanças estão equilibradas. Continue acompanhando seus lançamentos diários.";
+        if(desMes > recMes && recMes > 0) {
+            insightMsg = "⚠️ Alerta: Suas despesas mensais superaram suas receitas neste período. Tente conter gastos supérfluos.";
+        } else if(desVar > 20) {
+            insightMsg = `📈 Atenção: Suas despesas subiram ${desVar.toFixed(0)}% em relação ao mês anterior. Verifique categorias como Alimentação ou Lazer.`;
+        } else if(recMes > desMes * 1.5 && recMes > 0) {
+            insightMsg = "🌟 Excelente desempenho! Você está poupando mais de um terço de seus ganhos mensais.";
+        }
+        document.getElementById("insight-text").innerText = insightMsg;
+
+        // Histórico Geral de Transações
         const tContainer = document.getElementById("t-cards-container"); tContainer.innerHTML = "";
         let sortedTransactions = [...transactions].reverse();
         sortedTransactions.forEach(t => {
-            if(searchKeyword && !t.desc.toLowerCase().includes(searchKeyword)) return;
+            if(searchKeyword) {
+                const matchDesc = t.desc.toLowerCase().includes(searchKeyword);
+                const matchTag = t.tags && t.tags.some(tag => tag.toLowerCase().includes(searchKeyword));
+                if(!matchDesc && !matchTag) return;
+            }
             if(filterMonth && !t.data.startsWith(filterMonth)) return;
 
             const card = document.createElement("div"); card.className = "list-card";
+            let tagsHtml = t.tags ? t.tags.map(tg => `<span class="tag-badge">#${tg}</span>`).join('') : '';
             card.innerHTML = `
                 <div class="list-card-details">
                     <h5>${t.desc}</h5>
                     <p>${t.data.split('-').reverse().slice(0,2).join('/')} • ${t.cat}</p>
+                    <div>${tagsHtml}</div>
                 </div>
                 <div class="list-card-right">
                     <span class="amt" style="color:${t.tipo==='receita'?'var(--success)':'var(--danger)'}">
-                        ${t.tipo==='receita'?'+':'-'} R$ ${t.valor.toFixed(2)}
+                        ${t.tipo==='receita'?'+':'-'} ${formatMoney(t.valor).replace('R$ ', '')}
                     </span>
                     <div class="actions-area">
                         <span onclick="editTrans(${t.id})">📝</span>
@@ -673,8 +860,28 @@
             tContainer.appendChild(card);
         });
 
+        // Agenda com Filtros e Ordenação Avançados
         const aContainer = document.getElementById("a-cards-container"); aContainer.innerHTML = "";
-        agenda.sort((a,b) => new Date(a.venc) - new Date(b.venc)).forEach(a => {
+        const aFilterStatus = document.getElementById("a-filter-status").value;
+        const aSortOrder = document.getElementById("a-sort-order").value;
+
+        let filteredAgenda = agenda.filter(a => {
+            const atrasado = a.status === "Pendente" && a.venc < new Date().toISOString().substring(0,10);
+            if(aFilterStatus === 'pendente' && (a.status !== 'Pendente' || atrasado)) return false;
+            if(aFilterStatus === 'atrasado' && !atrasado) return false;
+            if(aFilterStatus === 'pago' && a.status !== 'Pago') return false;
+            return true;
+        });
+
+        filteredAgenda.sort((a,b) => {
+            if(aSortOrder === 'venc-asc') return new Date(a.venc) - new Date(b.venc);
+            if(aSortOrder === 'venc-desc') return new Date(b.venc) - new Date(a.venc);
+            if(aSortOrder === 'val-desc') return b.valor - a.valor;
+            if(aSortOrder === 'val-asc') return a.valor - b.valor;
+            return 0;
+        });
+
+        filteredAgenda.forEach(a => {
             const card = document.createElement("div"); card.className = "list-card";
             const atrasado = a.status === "Pendente" && a.venc < new Date().toISOString().substring(0,10);
             card.innerHTML = `
@@ -684,7 +891,7 @@
                     <small style="color:${atrasado?'var(--danger)':'var(--text-dim)'}; font-weight:bold">${atrasado?'🚨 ATRASADO':a.status}</small>
                 </div>
                 <div class="list-card-right">
-                    <span class="amt">R$ ${a.valor.toFixed(2)}</span>
+                    <span class="amt">${formatMoney(a.valor)}</span>
                     <div style="display:flex; gap:8px; margin-top:4px;">
                         ${a.status === 'Pendente' ? `<button class="btn-action" style="padding:6px 10px; font-size:0.7rem; background:var(--success)" onclick="liquidarConta(${a.id})">Liq.</button>` : ''}
                         <button class="btn-action" style="padding:6px 10px; font-size:0.7rem; background:var(--danger)" onclick="removerAgenda(${a.id})">X</button>
@@ -694,6 +901,7 @@
             aContainer.appendChild(card);
         });
 
+        // Contas / Carteiras
         const wContainer = document.getElementById("w-cards-container"); wContainer.innerHTML = "";
         wallets.forEach(w => {
             const card = document.createElement("div"); card.className = "list-card";
@@ -703,27 +911,49 @@
                     <p>${w.type}</p>
                 </div>
                 <div class="list-card-right">
-                    <span class="amt" style="color:${wSaldos[w.id]>=0?'var(--text-main)':'var(--danger)'}">R$ ${wSaldos[w.id].toFixed(2)}</span>
+                    <span class="amt" style="color:${wSaldos[w.id]>=0?'var(--text-main)':'var(--danger)'}">${formatMoney(wSaldos[w.id])}</span>
                 </div>
             `;
             wContainer.appendChild(card);
         });
 
+        // Metas de Economia
+        const gContainer = document.getElementById("g-cards-container"); gContainer.innerHTML = "";
+        goals.forEach(g => {
+            const card = document.createElement("div"); card.className = "list-card";
+            const percent = Math.min(100, (g.current / g.target) * 100);
+            card.innerHTML = `
+                <div class="list-card-details" style="flex:1; margin-right:12px;">
+                    <h5>${g.name}</h5>
+                    <p>Meta: ${formatMoney(g.target)} • Prazo: ${g.deadline ? g.deadline.split('-').reverse().join('/') : 'N/D'}</p>
+                    <div style="background:rgba(255,255,255,0.1); border-radius:6px; height:8px; margin-top:8px; overflow:hidden;">
+                        <div style="background:var(--success); width:${percent}%; height:100%;"></div>
+                    </div>
+                    <small style="color:var(--text-dim); margin-top:2px; display:block;">Progresso: ${percent.toFixed(0)}% (${formatMoney(g.current)})</small>
+                </div>
+                <div class="list-card-right">
+                    <div style="display:flex; gap:6px; margin-bottom:6px;">
+                        <button onclick="addGoalValue(${g.id}, 50)" style="background:var(--success); border:none; color:white; padding:4px 8px; border-radius:6px; font-size:0.7rem; cursor:pointer;">+R$50</button>
+                        <button onclick="removeGoal(${g.id})" style="background:var(--danger); border:none; color:white; padding:4px 8px; border-radius:6px; font-size:0.7rem; cursor:pointer;">🗑️</button>
+                    </div>
+                </div>
+            `;
+            gContainer.appendChild(card);
+        });
+
         document.getElementById("quick-summary-text").innerHTML = recMes || desMes ? 
-            `Este mês acumulou <strong>R$ ${recMes.toFixed(2)}</strong> em ganhos e <strong>R$ ${desMes.toFixed(2)}</strong> em despesas totais.` : 
+            `Este mês acumulou <strong>${formatMoney(recMes)}</strong> em ganhos e <strong>${formatMoney(desMes)}</strong> em despesas totais.` : 
             "Nenhuma movimentação indexada este mês.";
 
         renderCharts(dashPeriodMode, filterMonth);
     }
 
     function renderCharts(dashPeriodMode, filterMonth) {
-        // --- Gráfico de Linha (Evolução Patrimonial) ---
         let timeLabels = [];
         let timeValues = [];
         let runningTotal = 0;
 
         if(dashPeriodMode === 'anual') {
-            // Agrupar por Ano
             let yearlyMap = {};
             transactions.forEach(t => {
                 let ano = t.data.substring(0, 4);
@@ -738,7 +968,6 @@
                 timeValues.push(runningTotal);
             });
         } else {
-            // Agrupar por Data Específica (Mensal/Geral)
             transactions.forEach(t => {
                 if(t.tipo === 'receita') runningTotal += t.valor;
                 else runningTotal -= t.valor;
@@ -759,7 +988,7 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
-        // --- Gráfico de Barras (Distribuição de Custos) ---
+        // Gráfico de Barras com Drilldown Interativo
         const costFilterType = document.getElementById('cost-filter-type').value;
         const customDateBox = document.getElementById('custom-cost-dates');
         customDateBox.style.display = costFilterType === 'periodo' ? 'flex' : 'none';
@@ -801,12 +1030,22 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: (event, elements) => {
+                    if(elements.length > 0) {
+                        const index = elements[0].index;
+                        const categoryName = chartBar.data.labels[index];
+                        document.getElementById('f-search').value = categoryName;
+                        switchTab(2);
+                        renderApp();
+                        pushNotification(`🔍 Filtrando por: ${categoryName}`);
+                    }
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return ` R$ ${context.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                                return ` ${formatMoney(context.raw)}`;
                             }
                         }
                     }
@@ -821,17 +1060,18 @@
 
     function exportBackup(){
         const backup = {
-            version:1,
-            exportadoEm:new Date().toISOString(),
+            version: 2,
+            exportadoEm: new Date().toISOString(),
             transactions,
             agenda,
-            wallets
+            wallets,
+            goals
         };
         const blob = new Blob([JSON.stringify(backup,null,2)], {type:"application/json"});
         const url = URL.createObjectURL(blob);
         const a=document.createElement("a");
         a.href=url;
-        a.download=`GbFinance_Backup_${new Date().toISOString().substring(0,10)}.json`;
+        a.download=`GbFinance_Pro_Backup_${new Date().toISOString().substring(0,10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
         pushNotification("✅ Backup exportado.");
@@ -848,13 +1088,15 @@
                     alert("Arquivo inválido.");
                     return;
                 }
-                transactions=data.transactions;
-                agenda=data.agenda;
-                wallets=data.wallets;
+                transactions = data.transactions;
+                agenda = data.agenda;
+                wallets = data.wallets;
+                if(data.goals) goals = data.goals;
 
                 localStorage.setItem("gb_trans_mob",JSON.stringify(transactions));
                 localStorage.setItem("gb_agen_mob",JSON.stringify(agenda));
                 localStorage.setItem("gb_wall_mob",JSON.stringify(wallets));
+                localStorage.setItem("gb_goals_mob",JSON.stringify(goals));
 
                 populateSelectors();
                 renderApp();
@@ -869,7 +1111,7 @@
 
     function exportCSV(){
         const linhas=[];
-        linhas.push(["Data", "Descrição", "Tipo", "Categoria", "Subcategoria", "Carteira", "Valor"]);
+        linhas.push(["Data", "Descrição", "Tipo", "Categoria", "Subcategoria", "Tags", "Carteira", "Valor"]);
         transactions.forEach(t=>{
             const carteira=wallets.find(w=>w.id===t.wallet);
             linhas.push([
@@ -878,6 +1120,7 @@
                 t.tipo,
                 `"${t.cat}"`,
                 `"${t.subcat}"`,
+                `"${t.tags ? t.tags.join(', ') : ''}"`,
                 `"${carteira?carteira.name:""}"`,
                 t.valor.toFixed(2)
             ]);
