@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -649,31 +648,431 @@ function exportBackup(){
   downloadFile(JSON.stringify(backup,null,2),"application/json",`GbFinance_Backup_${todayLocal()}.json`);
   pushNotification("Backup exportado.");
 }
+
+/*
+ * IMPORTAÇÃO COMPATÍVEL:
+ * 1. Backup padrão do GbFinance.
+ * 2. Arquivo exportado por "Exportar chave" da recuperação.
+ * 3. Arquivo exportado por "Exportar todas as chaves".
+ * 4. JSONs com nomes alternativos para as listas.
+ *
+ * A importação mantém as categorias que não existirem no arquivo.
+ * Antes de gravar, cria uma cópia preventiva do armazenamento atual.
+ */
 function importBackup(event){
-  const file=event.target.files?.[0];if(!file)return;
+  const input=event?.target;
+  const file=input?.files?.[0];
+  if(!file)return;
+
   const reader=new FileReader();
+
   reader.onload=()=>{
     try{
-      const data=JSON.parse(reader.result);
-      if(!data||!Array.isArray(data.transactions)||!Array.isArray(data.agenda)||!Array.isArray(data.wallets)||!Array.isArray(data.goals))throw new Error("Estrutura de backup inválida.");
-      const validTransactions=data.transactions.every(t=>t&&t.id!==undefined&&["receita","despesa"].includes(t.tipo)&&Number.isFinite(Number(t.valor))&&typeof t.data==="string");
-      const validAgenda=data.agenda.every(a=>a&&a.id!==undefined&&["receita","despesa"].includes(a.tipo)&&Number.isFinite(Number(a.valor))&&typeof a.venc==="string");
-      const validWallets=data.wallets.every(w=>w&&w.id!==undefined&&typeof w.name==="string"&&Number.isFinite(Number(w.initial)));
-      const validGoals=data.goals.every(g=>g&&g.id!==undefined&&typeof g.name==="string"&&Number.isFinite(Number(g.target)));
-      if(!validTransactions||!validAgenda||!validWallets||!validGoals)throw new Error("Existem registros inválidos no arquivo.");
-      if(!confirm("Importar este backup substituirá os dados atuais. Deseja continuar?"))return;
-      const old={transactions,agenda,wallets,goals};
-      transactions=data.transactions;agenda=data.agenda;wallets=data.wallets;goals=data.goals;
-      if(!saveAll()){
-        transactions=old.transactions;agenda=old.agenda;wallets=old.wallets;goals=old.goals;saveAll();
-        throw new Error("Não foi possível gravar o backup.");
+      let root;
+      try{
+        root=JSON.parse(String(reader.result??""));
+      }catch{
+        throw new Error("O arquivo não contém um JSON válido.");
       }
-      populateSelectors();resetTransactionForm();renderApp();pushNotification("Backup restaurado.");
-    }catch(err){console.error(err);alert("Não foi possível importar o backup. Verifique se o arquivo JSON é válido e pertence ao GbFinance.");}
-    finally{event.target.value="";}
+
+      const targetAliases={
+        transactions:["transactions","transacoes","transacao","movimentacoes","movimentacao","lancamentos","lancamento","gb_trans_mob","gbtransmob"],
+        agenda:["agenda","compromissos","agendamentos","contasagendadas","gb_agen_mob","gbagenmob"],
+        wallets:["wallets","wallet","carteiras","carteira","contas","gb_wall_mob","gbwallmob"],
+        goals:["goals","goal","metas","meta","gb_goals_mob","gbgoalsmob"]
+      };
+
+      const normalizeKey=value=>String(value??"")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g,"");
+
+      const aliasToTarget={};
+      Object.entries(targetAliases).forEach(([target,aliases])=>{
+        aliases.forEach(alias=>aliasToTarget[normalizeKey(alias)]=target);
+        aliasToTarget[normalizeKey(STORAGE_KEYS[target])]=target;
+      });
+
+      const candidates={};
+      const candidateSources={};
+      const addCandidate=(target,value,source)=>{
+        if(!target||!Array.isArray(value))return;
+        if(!Object.prototype.hasOwnProperty.call(candidates,target)){
+          candidates[target]=value;
+          candidateSources[target]=source||target;
+        }else if(candidates[target].length===0&&value.length>0){
+          candidates[target]=value;
+          candidateSources[target]=source||target;
+        }
+      };
+
+      function inferArrayTarget(array){
+        if(!Array.isArray(array))return null;
+        if(array.length===0)return null;
+
+        const items=array.filter(item=>item&&typeof item==="object"&&!Array.isArray(item));
+        if(!items.length)return null;
+
+        const transaction=items.some(item=>
+          item.tipo!==undefined&&item.valor!==undefined&&
+          (item.data!==undefined||item.desc!==undefined||item.descricao!==undefined)
+        );
+        if(transaction)return "transactions";
+
+        const agendaItem=items.some(item=>
+          item.venc!==undefined&&item.valor!==undefined&&
+          (item.status!==undefined||item.rec!==undefined||item.recorrencia!==undefined)
+        );
+        if(agendaItem)return "agenda";
+
+        const wallet=items.some(item=>
+          (item.name!==undefined||item.nome!==undefined)&&
+          (item.initial!==undefined||item.type!==undefined||item.tipoConta!==undefined||item.saldoInicial!==undefined)
+        );
+        if(wallet)return "wallets";
+
+        const goal=items.some(item=>
+          (item.name!==undefined||item.nome!==undefined)&&
+          (item.target!==undefined||item.alvo!==undefined||item.valorAlvo!==undefined)
+        );
+        if(goal)return "goals";
+
+        return null;
+      }
+
+      function parseMaybeJSON(value){
+        if(typeof value!=="string")return value;
+        try{return JSON.parse(value);}catch{return value;}
+      }
+
+      /*
+       * Reconhece a estrutura gerada por exportRecoveryEntry():
+       * { chave, valorBruto, valorInterpretado }
+       */
+      if(root&&typeof root==="object"&&!Array.isArray(root)){
+        const recoveredValue=root.valorInterpretado!==undefined
+          ?root.valorInterpretado
+          :root.valorBruto!==undefined
+            ?parseMaybeJSON(root.valorBruto)
+            :undefined;
+
+        if(Array.isArray(recoveredValue)){
+          const sourceKey=String(root.chave||"");
+          const target=aliasToTarget[normalizeKey(sourceKey)]||inferArrayTarget(recoveredValue);
+          if(target)addCandidate(target,recoveredValue,sourceKey||"valorInterpretado");
+        }
+      }
+
+      /*
+       * Reconhece a estrutura gerada por exportAllLocalStorage():
+       * { dados: { gb_trans_mob: { tipo, valor, valorBruto }, ... } }
+       */
+      if(root&&typeof root==="object"&&!Array.isArray(root)&&root.dados&&typeof root.dados==="object"){
+        Object.entries(root.dados).forEach(([key,entry])=>{
+          let value;
+
+          if(Array.isArray(entry)){
+            value=entry;
+          }else if(entry&&typeof entry==="object"){
+            if(Array.isArray(entry.valor))value=entry.valor;
+            else if(Array.isArray(entry.value))value=entry.value;
+            else if(entry.valor!==undefined)value=parseMaybeJSON(entry.valor);
+            else if(entry.valorBruto!==undefined)value=parseMaybeJSON(entry.valorBruto);
+            else if(entry.value!==undefined)value=parseMaybeJSON(entry.value);
+          }else{
+            value=parseMaybeJSON(entry);
+          }
+
+          if(!Array.isArray(value))return;
+          const target=aliasToTarget[normalizeKey(key)]||inferArrayTarget(value);
+          if(target)addCandidate(target,value,key);
+        });
+      }
+
+      /*
+       * Procura listas dentro do arquivo, inclusive em objetos aninhados.
+       * Limita a profundidade para evitar recursão excessiva em arquivos ruins.
+       */
+      const visited=new WeakSet();
+      function walk(value,depth,path){
+        if(depth>12||value===null||typeof value!=="object")return;
+        if(visited.has(value))return;
+        visited.add(value);
+
+        if(Array.isArray(value)){
+          const target=inferArrayTarget(value);
+          if(target)addCandidate(target,value,path);
+          return;
+        }
+
+        Object.entries(value).forEach(([key,child])=>{
+          const target=aliasToTarget[normalizeKey(key)];
+          if(target&&Array.isArray(child)){
+            addCandidate(target,child,path?`${path}.${key}`:key);
+          }else if(child&&typeof child==="object"){
+            walk(child,depth+1,path?`${path}.${key}`:key);
+          }else if(typeof child==="string"&&target){
+            const parsed=parseMaybeJSON(child);
+            if(Array.isArray(parsed))addCandidate(target,parsed,path?`${path}.${key}`:key);
+          }
+        });
+      }
+      walk(root,0,"arquivo");
+
+      if(!Object.keys(candidates).length){
+        throw new Error(
+          "Não encontrei listas reconhecíveis de transações, agenda, carteiras ou metas neste JSON. Use a ferramenta de recuperação para exportar a chave que contém os dados."
+        );
+      }
+
+      /*
+       * Converte nomes de campos conhecidos de versões antigas para o
+       * formato usado atualmente pelo GbFinance.
+       */
+      function normalizeRecords(target,array){
+        return array.map((original,index)=>{
+          if(!original||typeof original!=="object"||Array.isArray(original)){
+            throw new Error(`O item ${index+1} de ${target} não é um objeto válido.`);
+          }
+
+          const item={...original};
+
+          if(target==="transactions"){
+            item.id=item.id??item.codigo??item.uuid??`recuperado_trans_${Date.now()}_${index}`;
+            item.desc=String(item.desc??item.descricao??item.nome??item.titulo??"Lançamento recuperado");
+            item.valor=Number(item.valor??item.value??item.amount);
+            let tipo=normalizeKey(item.tipo??item.natureza??item.type??"");
+            if(["receita","entrada","credito","income","in"].includes(tipo))item.tipo="receita";
+            else if(["despesa","saida","debito","expense","out"].includes(tipo))item.tipo="despesa";
+            item.data=String(item.data??item.date??item.dataLancamento??"");
+            item.cat=String(item.cat??item.categoria??item.category??"📦 Outros");
+            item.subcat=String(item.subcat??item.subcategoria??item.subcategory??"");
+            item.tags=Array.isArray(item.tags)?item.tags:
+              typeof item.tags==="string"?item.tags.split(",").map(tag=>tag.trim()).filter(Boolean):[];
+            item.wallet=item.wallet??item.carteira??item.conta??item.walletId??"";
+          }
+
+          if(target==="agenda"){
+            item.id=item.id??item.codigo??`recuperado_agenda_${Date.now()}_${index}`;
+            item.desc=String(item.desc??item.descricao??item.nome??item.titulo??"Compromisso recuperado");
+            item.valor=Number(item.valor??item.value??item.amount);
+            let tipo=normalizeKey(item.tipo??item.natureza??item.type??"");
+            if(["receita","entrada","credito","income","areceber"].includes(tipo))item.tipo="receita";
+            else if(["despesa","saida","debito","expense","apagar"].includes(tipo))item.tipo="despesa";
+            item.venc=String(item.venc??item.vencimento??item.dataVencimento??item.dueDate??item.data??"");
+            item.status=String(item.status??"Pendente");
+            item.rec=String(item.rec??item.recorrencia??"unica");
+            item.paidDates=Array.isArray(item.paidDates)?item.paidDates:[];
+          }
+
+          if(target==="wallets"){
+            item.id=item.id??item.codigo??`recuperado_carteira_${Date.now()}_${index}`;
+            item.name=String(item.name??item.nome??item.descricao??"Carteira recuperada");
+            item.type=String(item.type??item.tipoConta??item.tipo??"Conta Corrente");
+            item.initial=Number(item.initial??item.saldoInicial??item.saldo_inicial??item.balance??item.saldo??0);
+          }
+
+          if(target==="goals"){
+            item.id=item.id??item.codigo??`recuperado_meta_${Date.now()}_${index}`;
+            item.name=String(item.name??item.nome??item.descricao??"Meta recuperada");
+            item.target=Number(item.target??item.alvo??item.valorAlvo??item.valor_alvo??item.valorMeta);
+            item.current=Number(item.current??item.guardado??item.saldoAtual??item.valorAtual??0);
+            item.deadline=String(item.deadline??item.prazo??item.dataLimite??"");
+          }
+
+          return item;
+        });
+      }
+
+      const normalized={};
+      Object.entries(candidates).forEach(([target,array])=>{
+        normalized[target]=normalizeRecords(target,array);
+      });
+
+      function validateArray(target,array){
+        if(!Array.isArray(array))return false;
+
+        if(target==="transactions"){
+          return array.every(item=>
+            item&&item.id!==undefined&&
+            ["receita","despesa"].includes(item.tipo)&&
+            Number.isFinite(Number(item.valor))&&
+            typeof item.data==="string"&&item.data.length>0
+          );
+        }
+
+        if(target==="agenda"){
+          return array.every(item=>
+            item&&item.id!==undefined&&
+            ["receita","despesa"].includes(item.tipo)&&
+            Number.isFinite(Number(item.valor))&&
+            typeof item.venc==="string"&&item.venc.length>0
+          );
+        }
+
+        if(target==="wallets"){
+          return array.every(item=>
+            item&&item.id!==undefined&&
+            typeof item.name==="string"&&item.name.length>0&&
+            Number.isFinite(Number(item.initial))
+          );
+        }
+
+        if(target==="goals"){
+          return array.every(item=>
+            item&&item.id!==undefined&&
+            typeof item.name==="string"&&item.name.length>0&&
+            Number.isFinite(Number(item.target))&&Number(item.target)>0&&
+            Number.isFinite(Number(item.current))
+          );
+        }
+
+        return false;
+      }
+
+      Object.entries(normalized).forEach(([target,array])=>{
+        if(!validateArray(target,array)){
+          throw new Error(
+            `A lista de ${target} foi identificada, mas contém registros incompletos ou incompatíveis. Nenhum dado foi importado.`
+          );
+        }
+      });
+
+      const labels={
+        transactions:"transações",
+        agenda:"compromissos da agenda",
+        wallets:"carteiras",
+        goals:"metas"
+      };
+
+      const summary=Object.entries(normalized)
+        .map(([target,array])=>`${array.length} ${labels[target]}`)
+        .join("\n");
+
+      const omitted=Object.keys(STORAGE_KEYS)
+        .filter(target=>!Object.prototype.hasOwnProperty.call(normalized,target));
+
+      const preservationNote=omitted.length
+        ?`\n\nEstas categorias não aparecem no arquivo e serão mantidas como estão:\n${omitted.map(target=>`• ${labels[target]}`).join("\n")}`
+        :"";
+
+      const confirmation=
+        "Os seguintes dados foram reconhecidos:\n\n"+
+        summary+
+        preservationNote+
+        "\n\nAntes da importação, o aplicativo tentará salvar uma cópia de segurança dos dados atuais. Deseja continuar?";
+
+      if(!confirm(confirmation))return;
+
+      /*
+       * Salva os valores brutos atuais para permitir uma restauração exata
+       * se alguma escrita falhar. Também mantém uma cópia preventiva em
+       * uma chave independente do localStorage.
+       */
+      const oldRaw={};
+      Object.values(STORAGE_KEYS).forEach(key=>{
+        oldRaw[key]=localStorage.getItem(key);
+      });
+
+      const safetyKey=`gbfinance_pre_import_backup_${Date.now()}`;
+      const safetyPayload={
+        app:"GbFinance Mobile Pro - Backup preventivo antes da importação",
+        criadoEm:new Date().toISOString(),
+        chavesOriginais:oldRaw
+      };
+
+      try{
+        localStorage.setItem(safetyKey,JSON.stringify(safetyPayload));
+      }catch(error){
+        console.error("Falha ao criar backup preventivo:",error);
+        throw new Error(
+          "Não foi possível criar uma cópia de segurança dos dados atuais. A importação foi cancelada para evitar perda de informações."
+        );
+      }
+
+      try{
+        Object.entries(normalized).forEach(([target,array])=>{
+          localStorage.setItem(STORAGE_KEYS[target],JSON.stringify(array));
+        });
+
+        /*
+         * Confere cada gravação antes de atualizar as variáveis em memória.
+         */
+        Object.entries(normalized).forEach(([target,array])=>{
+          const saved=localStorage.getItem(STORAGE_KEYS[target]);
+          if(saved===null)throw new Error(`A verificação da gravação de ${target} falhou.`);
+          const parsed=JSON.parse(saved);
+          if(!Array.isArray(parsed)||parsed.length!==array.length){
+            throw new Error(`A verificação da lista ${target} falhou.`);
+          }
+        });
+      }catch(writeError){
+        console.error("Falha durante a gravação:",writeError);
+
+        let rollbackFailed=false;
+        Object.entries(oldRaw).forEach(([key,raw])=>{
+          try{
+            if(raw===null)localStorage.removeItem(key);
+            else localStorage.setItem(key,raw);
+          }catch(rollbackError){
+            rollbackFailed=true;
+            console.error("Falha ao restaurar chave:",key,rollbackError);
+          }
+        });
+
+        throw new Error(
+          "A gravação da importação falhou. "+
+          (rollbackFailed
+            ?`O aplicativo tentou restaurar os valores anteriores, mas houve uma falha no processo. O backup preventivo está na chave ${safetyKey}.`
+            :"Os valores anteriores foram restaurados. Nenhuma importação foi concluída.")
+        );
+      }
+
+      /*
+       * Atualiza o estado somente depois de confirmar as gravações.
+       * Categorias ausentes no arquivo permanecem como estavam.
+       */
+      if(normalized.transactions)transactions=normalized.transactions;
+      if(normalized.agenda)agenda=normalized.agenda;
+      if(normalized.wallets)wallets=normalized.wallets;
+      if(normalized.goals)goals=normalized.goals;
+
+      populateSelectors();
+      resetTransactionForm();
+      renderApp();
+
+      if(typeof scanLocalStorage==="function")scanLocalStorage();
+
+      pushNotification("Importação concluída com sucesso.");
+      alert(
+        "Importação concluída!\n\n"+
+        summary+
+        "\n\nCópia preventiva criada na chave:\n"+
+        safetyKey+
+        "\n\nOs dados que não estavam no arquivo foram mantidos."
+      );
+
+    }catch(error){
+      console.error("Erro ao importar backup:",error);
+      alert(
+        "Não foi possível importar o arquivo.\n\n"+
+        (error?.message||"Erro desconhecido.")+
+        "\n\nNenhum dado deve ser apagado manualmente. Se continuar falhando, exporte o arquivo de recuperação e verifique sua estrutura."
+      );
+    }finally{
+      if(input)input.value="";
+    }
   };
-  reader.onerror=()=>{alert("Falha ao ler o arquivo.");event.target.value="";};reader.readAsText(file);
+
+  reader.onerror=()=>{
+    alert("Não foi possível ler o arquivo selecionado.");
+    if(input)input.value="";
+  };
+
+  reader.readAsText(file);
 }
+
 function csvEscape(value){
   let s=String(value??"");if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';
 }
@@ -723,10 +1122,6 @@ function scanLocalStorage(){
   const status=document.getElementById("recovery-status"),results=document.getElementById("recovery-results");
   recoveryEntries=[];results.replaceChildren();
   try{
-    /*
-     * Captura as chaves antes de ler os valores, evitando que alterações
-     * na coleção interfiram no percurso. A busca não grava nada.
-     */
     const keys=[];
     for(let i=0;i<localStorage.length;i++){
       const key=localStorage.key(i);
@@ -890,10 +1285,6 @@ function safeFilename(value){
   return String(value).replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,70)||"dados";
 }
 function exportAllLocalStorage(){
-  /*
-   * Atualiza a leitura imediatamente antes da exportação para reduzir
-   * a possibilidade de exportar uma lista desatualizada.
-   */
   try{
     const all={};
     for(let i=0;i<localStorage.length;i++){
@@ -958,10 +1349,6 @@ function restoreRecoveryEntry(sourceKey){
   const confirmation=`Foram reconhecidos ${count} registro(s) de ${target.label} na chave "${sourceKey}".\n\nDestino: ${targetKey}.\n\n${currentExists?"A chave de destino já contém dados. Eles serão copiados para uma chave de segurança antes da restauração.":"A chave de destino está vazia."}\n\nDeseja continuar?`;
   if(!confirm(confirmation))return;
 
-  /*
-   * Backup preventivo do valor atual do destino. O backup guarda o texto
-   * original, sem reinterpretar ou transformar os dados existentes.
-   */
   let safetyKey=null;
   if(currentExists){
     safetyKey=`gb_recovery_safety_${Date.now()}`;
@@ -1001,10 +1388,6 @@ function restoreRecoveryEntry(sourceKey){
     return;
   }
 
-  /*
-   * Atualiza o estado em memória após a escrita bem-sucedida.
-   * Não remove a chave de origem nem o backup preventivo.
-   */
   if(target.name==="transactions")transactions=entry.parsedValue;
   if(target.name==="agenda")agenda=entry.parsedValue;
   if(target.name==="wallets")wallets=entry.parsedValue;
