@@ -1,1407 +1,2408 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#030712">
-<title>GbFinance Mobile Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080b18"><title>GbFinance Mobile Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-:root{--bg:#030712;--panel:rgba(17,24,39,.82);--border:rgba(129,140,248,.18);--accent:#818cf8;--gradient:linear-gradient(135deg,#6366f1,#a855f7);--text:#f9fafb;--dim:#9ca3af;--green:#10b981;--red:#ef4444;--yellow:#f59e0b}
-.light-theme{--bg:#f3f4f6;--panel:rgba(255,255,255,.92);--border:rgba(99,102,241,.16);--text:#111827;--dim:#6b7280}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom));overflow-x:hidden;transition:background .2s,color .2s}
-button,input,select,textarea{font:inherit}button{cursor:pointer}
-.mobile-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top));background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(18px)}
-.app-container{padding:16px;max-width:680px;margin:auto}
-.metrics-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;margin-bottom:8px;scroll-snap-type:x mandatory}
-.metrics-scroll::-webkit-scrollbar{display:none}
-.m-card{flex:0 0 78%;scroll-snap-align:center;background:var(--panel);border:1px solid var(--border);padding:16px;border-radius:18px;min-width:0}
-.m-card h4{font-size:.7rem;text-transform:uppercase;color:var(--dim);letter-spacing:.5px}
-.m-card .val{font-size:1.55rem;font-weight:800;margin-top:5px;overflow-wrap:anywhere}
-.sub-info{font-size:.7rem;color:var(--dim);margin-top:4px;line-height:1.5}
-.glass-panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:16px;backdrop-filter:blur(16px)}
-.panel-title{font-weight:800;font-size:1rem;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.chart-box{height:225px;position:relative;width:100%}
-.form-vertical{display:flex;flex-direction:column;gap:13px}
-.input-group{display:flex;flex-direction:column;gap:6px}
-.input-group label{font-size:.7rem;font-weight:800;color:var(--dim);text-transform:uppercase}
-input,select,textarea{background:rgba(0,0,0,.16);border:1px solid var(--border);color:var(--text);padding:13px;border-radius:12px;outline:none;width:100%;min-width:0;font-size:.9rem}
-.light-theme input,.light-theme select,.light-theme textarea{background:#fff;color:#111827}
-option{background:var(--bg);color:var(--text)}
-.btn-action{background:var(--gradient);color:white;border:0;padding:14px;border-radius:12px;font-weight:800;font-size:.88rem;width:100%}
-.btn-small{border:0;border-radius:8px;padding:7px 10px;color:#fff;font-weight:700;font-size:.72rem}
-.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-neutral{background:rgba(129,140,248,.2);color:var(--text)}
-.fab-btn{position:fixed;right:20px;bottom:calc(80px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;background:var(--gradient);color:#fff;border:0;font-size:1.7rem;box-shadow:0 8px 24px #6366f155;z-index:900}
-.mobile-list{display:flex;flex-direction:column;gap:10px;max-height:460px;overflow-y:auto;padding-right:2px}
-.list-card{background:rgba(128,128,128,.055);border:1px solid var(--border);border-radius:14px;padding:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;min-width:0}
-.list-card-details{flex:1;min-width:0;overflow-wrap:anywhere}
-.list-card-details h5{font-size:.86rem;font-weight:800;margin-bottom:5px;overflow-wrap:anywhere}
-.list-card-details p{font-size:.72rem;color:var(--dim);line-height:1.6;overflow-wrap:anywhere}
-.list-card-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
-.amt{font-size:.88rem;font-weight:800;overflow-wrap:anywhere}
-.actions-area{display:flex;gap:12px;font-size:1rem}
-.actions-area button{background:none;border:0;font-size:1rem;padding:2px}
-.tag-badge{display:inline-block;background:rgba(99,102,241,.16);color:var(--accent);font-size:.62rem;padding:3px 6px;border-radius:5px;margin:4px 3px 0 0}
-.bottom-nav{position:fixed;bottom:0;left:0;width:100%;height:calc(66px + env(safe-area-inset-bottom));padding:8px 2px env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-around;z-index:950;backdrop-filter:blur(20px)}
-.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--dim);font-size:.59rem;font-weight:800;flex:1;min-width:0}
-.nav-item span{font-size:1.2rem}.nav-item.active{color:var(--accent)}
-#notification-center{position:fixed;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:#111827;border-left:4px solid #818cf8;padding:13px 16px;border-radius:12px;color:#fff;font-size:.82rem;box-shadow:0 8px 25px #0005}
-.empty-state{text-align:center;color:var(--dim);font-size:.8rem;padding:22px 8px}
-.progress{background:rgba(128,128,128,.18);height:8px;border-radius:8px;overflow:hidden;margin-top:9px}
-.progress div{height:100%;background:var(--green);border-radius:8px}
-.muted{color:var(--dim)}.row-fields{display:flex;gap:8px}.row-fields>*{flex:1;min-width:0}
-.recovery-toolbar{display:flex;flex-direction:column;gap:10px;margin:14px 0}
-.recovery-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
-.recovery-stat{border:1px solid var(--border);background:rgba(129,140,248,.08);border-radius:12px;padding:12px;min-width:0}
-.recovery-stat strong{display:block;font-size:1.15rem;overflow-wrap:anywhere}
-.recovery-stat span{display:block;color:var(--dim);font-size:.7rem;margin-top:4px}
-.recovery-item{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);border-radius:13px;padding:12px;margin-bottom:10px;min-width:0}
-.recovery-key{font-size:.82rem;font-weight:800;overflow-wrap:anywhere;word-break:break-word}
-.recovery-meta{color:var(--dim);font-size:.7rem;line-height:1.6;overflow-wrap:anywhere}
-.recovery-actions{display:flex;flex-wrap:wrap;gap:7px}
-.recovery-actions button{flex:1;min-width:85px}
-.recovery-preview{width:100%;min-height:220px;resize:vertical;background:rgba(0,0,0,.2);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px;font:12px/1.5 monospace;overflow-wrap:anywhere}
-.recovery-warning{border-left:3px solid var(--yellow);padding:10px 12px;background:rgba(245,158,11,.08);border-radius:6px;font-size:.76rem;line-height:1.6}
-@media(min-width:600px){.m-card{flex-basis:42%}.app-container{padding:22px}}
+:root{--bg:#070a16;--panel:rgba(19,25,45,.82);--panel2:rgba(255,255,255,.035);--border:rgba(139,145,255,.16);--accent:#818cf8;--accent2:#a855f7;--text:#f8fafc;--muted:#a1a9bd;--good:#34d399;--bad:#fb7185;--warn:#fbbf24;--shadow:0 16px 40px rgba(0,0,0,.18)}
+body.light-theme{--bg:#f1f3f9;--panel:rgba(255,255,255,.92);--panel2:rgba(15,23,42,.035);--border:rgba(79,70,229,.15);--text:#172033;--muted:#647089;--shadow:0 12px 30px rgba(30,41,59,.08)}
+*{box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif;margin:0;padding:0;-webkit-tap-highlight-color:transparent}body{background:radial-gradient(ellipse at top left,rgba(99,102,241,.10),transparent 45%),var(--bg);color:var(--text);min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom));transition:background .25s,color .25s}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.header{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;background:var(--panel);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}.brand{font-weight:800;font-size:1.1rem;letter-spacing:-.5px}.brand span{color:var(--accent)}.header-actions{display:flex;gap:8px}.icon-btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:11px;padding:9px 11px}.app{max-width:1000px;margin:auto;padding:16px}.view{display:none;animation:fadein .22s ease}.view.active{display:block}@keyframes fadein{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.metric,.panel{background:var(--panel);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}.metric{padding:16px;min-width:0;border-top:3px solid var(--accent)}.metric:nth-child(2){border-top-color:var(--good)}.metric:nth-child(3){border-top-color:var(--bad)}.metric:nth-child(4){border-top-color:var(--warn)}.metric label{font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:800}.metric strong{display:block;font-size:clamp(1rem,2vw,1.5rem);margin-top:7px;overflow-wrap:anywhere}.metric small{display:block;color:var(--muted);font-size:.72rem;margin-top:5px}.panel{padding:19px;margin-bottom:16px;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}.panel-title{font-size:1rem;font-weight:800}.subtle{color:var(--muted);font-size:.82rem;line-height:1.55}.insight{background:linear-gradient(135deg,rgba(99,102,241,.16),rgba(168,85,247,.07));border-color:rgba(129,140,248,.3)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.chartbox{height:260px;position:relative;width:100%}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:.7rem;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.3px}.field input,.field select,.field textarea,.filter-input{width:100%;min-width:0;padding:12px 13px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);color:var(--text);outline:none;font-size:.9rem}.field select option{background:var(--bg);color:var(--text)}.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:800;color:white;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 18px rgba(99,102,241,.16)}.btn.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);box-shadow:none}.btn.danger{background:var(--bad)}.btn.good{background:#059669}.btn.small{font-size:.72rem;padding:7px 10px;border-radius:9px}.btn-row{display:flex;gap:8px;flex-wrap:wrap}.form-actions{grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap}.form-actions .btn{flex:1}.segmented{display:flex;gap:6px;padding:4px;background:var(--panel2);border:1px solid var(--border);border-radius:13px}.segmented button{flex:1;background:transparent;border:0;color:var(--muted);border-radius:9px;padding:9px;font-size:.78rem;font-weight:800}.segmented button.active{background:var(--accent);color:#fff}.list{display:flex;flex-direction:column;gap:10px}.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--border);background:var(--panel2);border-radius:15px;min-width:0}.item-main{min-width:0;flex:1}.item-main strong{font-size:.9rem;display:block;overflow-wrap:anywhere}.item-main p{font-size:.74rem;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.item-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}.amount{font-weight:800;font-size:.9rem}.positive{color:var(--good)}.negative{color:var(--bad)}.badge{font-size:.65rem;border-radius:7px;padding:4px 7px;background:rgba(129,140,248,.15);color:var(--accent);font-weight:800}.badge.warn{background:rgba(251,191,36,.14);color:var(--warn)}.badge.bad{background:rgba(251,113,133,.14);color:var(--bad)}.badge.good{background:rgba(52,211,153,.14);color:var(--good)}.empty{padding:24px;text-align:center;color:var(--muted);font-size:.84rem;border:1px dashed var(--border);border-radius:14px}.filters{display:grid;grid-template-columns:2fr repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}.filters input,.filters select{width:100%;min-width:0;padding:10px;border-radius:11px;border:1px solid var(--border);background:var(--panel2);color:var(--text);font-size:.8rem}.bottom-nav{position:fixed;z-index:50;bottom:0;left:0;right:0;display:flex;justify-content:space-around;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:var(--panel);backdrop-filter:blur(22px);border-top:1px solid var(--border)}.nav-item{border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.64rem;font-weight:800;flex:1;min-width:0;padding:3px 1px}.nav-item span{font-size:1.15rem}.nav-item.active{color:var(--accent)}.fab{position:fixed;right:18px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:30;width:54px;height:54px;border-radius:18px;border:0;color:white;background:linear-gradient(135deg,#6366f1,#a855f7);font-size:1.6rem;box-shadow:0 12px 28px rgba(99,102,241,.35)}#notification-center{position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;z-index:100;display:flex;flex-direction:column;gap:8px;pointer-events:none}.toast{pointer-events:auto;background:#161b2c;color:#fff;border-left:4px solid #818cf8;border-radius:12px;padding:13px 16px;font-size:.82rem;box-shadow:var(--shadow);animation:fadein .2s}.toast button{float:right;border:0;background:none;color:#fff}.barline{height:8px;border-radius:9px;background:var(--panel2);overflow:hidden;margin-top:8px}.barline span{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#34d399);border-radius:9px}.hidden{display:none!important}.privacy .money{filter:blur(7px);user-select:none}.table-note{font-size:.72rem;color:var(--muted);margin-top:10px}.report-head{display:none}
+@media(min-width:760px){.app{padding:22px}.metrics{gap:16px}.metric{padding:20px}.panel{padding:22px}.bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(760px,96%);border:1px solid var(--border);border-bottom:0;border-radius:18px 18px 0 0}.fab{right:max(24px,calc((100vw - 960px)/2))}}
+@media(max-width:620px){.metrics{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:5px}.metric{flex:0 0 76%;scroll-snap-align:center}.grid2{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.filters input:first-child{grid-column:1/-1}.form-grid{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.panel{padding:15px;border-radius:17px}.chartbox{height:230px}.nav-item{font-size:.58rem}
+.header{padding-left:13px;padding-right:13px}.brand{font-size:1rem}.item{padding:11px}.item-right .btn-row{justify-content:flex-end}.report-head{display:none}}
+@media print{body{background:#fff!important;color:#111!important;padding:0!important}.header,.bottom-nav,.fab,.no-print,#notification-center{display:none!important}.app{max-width:none;padding:0}.view{display:none!important}#view-reports{display:block!important}.panel,.metric,.item{background:#fff!important;color:#111!important;border:1px solid #ddd!important;box-shadow:none!important;break-inside:avoid}.report-head{display:block!important;margin-bottom:20px}.subtle,.metric label,.item-main p,.table-note{color:#444!important}.chartbox{height:220px}.btn{display:none!important}canvas{max-width:100%}}
 </style>
 </head>
 <body>
-<div id="notification-center"></div>
-<header class="mobile-header">
-  <div style="font-weight:800;font-size:1.18rem;letter-spacing:-.5px">Gb<span style="color:var(--accent)">FINANCE</span></div>
-  <div style="display:flex;gap:8px">
-    <button class="btn-small btn-neutral" id="btn-privacy" onclick="togglePrivacy()" aria-label="Alternar privacidade">👁️</button>
-    <button class="btn-small btn-neutral" onclick="toggleTheme()" aria-label="Alternar tema">🎨</button>
+<header class="header">
+  <div class="brand">GbFinance <span>Mobile Pro</span></div>
+  <div class="header-actions">
+    <button class="icon-btn" id="privacy-toggle" title="Ocultar valores" onclick="togglePrivacy()">◉</button>
+    <button class="icon-btn" title="Notificações" onclick="showNotifications()">♧</button>
   </div>
 </header>
-<button class="fab-btn" onclick="switchTab(2)" aria-label="Novo lançamento">+</button>
 
-<main class="app-container">
-<div class="metrics-scroll">
-  <div class="m-card" style="border-left:4px solid var(--accent)"><h4>Saldo total</h4><div class="val priv-val" id="m-saldo-total">R$ 0,00</div><p class="sub-info" id="m-proj-total">Previsto: R$ 0,00</p></div>
-  <div class="m-card" style="border-left:4px solid var(--green)"><h4 id="m-rec-title">Receitas (mês)</h4><div class="val priv-val" id="m-rec-val" style="color:var(--green)">R$ 0,00</div><p class="sub-info" id="m-rec-var">vs. mês anterior: 0%</p></div>
-  <div class="m-card" style="border-left:4px solid var(--red)"><h4 id="m-des-title">Despesas (mês)</h4><div class="val priv-val" id="m-des-val" style="color:var(--red)">R$ 0,00</div><p class="sub-info" id="m-des-var">vs. mês anterior: 0%</p></div>
-  <div class="m-card" style="border-left:4px solid var(--yellow)"><h4>Economia</h4><div class="val" id="m-taxa-eco" style="color:var(--yellow)">0%</div><p class="sub-info">Taxa de poupança</p></div>
-</div>
+<div id="notification-center"></div>
 
-<section id="v-dash">
-  <div class="glass-panel" style="background:linear-gradient(135deg,rgba(99,102,241,.13),rgba(168,85,247,.05))"><div class="panel-title">💡 Insights inteligentes</div><p id="insight-text" style="font-size:.84rem;line-height:1.6">Analisando dados financeiros...</p></div>
-  <div class="glass-panel">
-    <div class="panel-title"><span>Evolução patrimonial</span><select id="dash-period-mode" onchange="renderApp()" style="width:auto;padding:7px;font-size:.72rem"><option value="mensal">Mensal</option><option value="anual">Anual</option></select></div>
-    <div class="chart-box"><canvas id="c-timeline"></canvas></div>
-  </div>
-  <div class="glass-panel">
-    <div class="panel-title"><span>Distribuição de custos</span><select id="cost-filter-type" onchange="renderApp()" style="width:auto;padding:7px;font-size:.72rem"><option value="mes">Mensal</option><option value="ano">Anual</option><option value="periodo">Personalizado</option></select></div>
-    <div id="custom-cost-dates" class="row-fields" style="display:none;margin-bottom:12px"><input type="date" id="cost-start-date" onchange="renderApp()" aria-label="Data inicial"><input type="date" id="cost-end-date" onchange="renderApp()" aria-label="Data final"></div>
-    <p class="sub-info" style="margin-bottom:10px">Toque em uma barra para ver os lançamentos da categoria.</p>
-    <div class="chart-box"><canvas id="c-categories"></canvas></div>
-  </div>
-  <div class="glass-panel"><div class="panel-title">Resumo de auditoria</div><p id="quick-summary-text" style="font-size:.84rem;line-height:1.7;color:var(--dim)">Carregando...</p></div>
-</section>
-
-<section id="v-trans" hidden>
-  <div class="glass-panel">
-    <div class="panel-title"><span id="form-trans-title">Nova transação</span><button class="btn-small btn-neutral" onclick="startVoiceInput()">🎤 Voz</button></div>
-    <div class="form-vertical">
-      <input type="hidden" id="t-id" value="">
-      <div class="input-group"><label>Descrição</label><input id="t-desc" placeholder="Ex.: Combustível"></div>
-      <div class="input-group"><label>Valor (R$)</label><input id="t-val" type="number" min=".01" step=".01" inputmode="decimal" placeholder="0,00"></div>
-      <div class="input-group"><label>Natureza</label><select id="t-tipo" onchange="populateCategories()"><option value="receita">🟢 Entrada (crédito)</option><option value="despesa">🔴 Saída (débito)</option></select></div>
-      <div class="input-group"><label>Categoria</label><select id="t-cat" onchange="updateSubcats()"></select></div>
-      <div class="input-group"><label>Subcategoria</label><select id="t-subcat"></select></div>
-      <div class="input-group"><label>Carteira</label><select id="t-wallet"></select></div>
-      <div class="input-group"><label>Tags (separadas por vírgula)</label><input id="t-tags" placeholder="fixo, urgente"></div>
-      <div class="input-group"><label>Data</label><input id="t-date" type="date"></div>
-      <button class="btn-action" onclick="saveTransaction()">Salvar lançamento</button>
-      <button class="btn-action" id="cancel-edit" onclick="resetTransactionForm()" style="display:none;background:#374151">Cancelar edição</button>
+<main class="app">
+  <!-- INÍCIO -->
+  <section id="view-home" class="view active">
+    <div class="panel insight">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Olá! Suas finanças em foco</div>
+          <div class="subtle" id="today-label"></div>
+        </div>
+        <span class="badge">FINANCEIRO</span>
+      </div>
+      <p id="assistant-insight" class="subtle">Organize suas movimentações e acompanhe sua evolução financeira.</p>
     </div>
-  </div>
-  <div class="glass-panel">
-    <div class="panel-title">Histórico geral</div>
-    <div class="form-vertical" style="gap:8px;margin-bottom:14px"><input id="f-search" placeholder="Buscar descrição, categoria ou tag..." oninput="renderTransactions()"><input id="f-date" type="month" onchange="renderApp()" aria-label="Filtrar por mês"><button class="btn-small btn-neutral" onclick="clearTransactionFilters()">Limpar filtros</button></div>
-    <div class="mobile-list" id="t-cards-container"></div>
-  </div>
-</section>
 
-<section id="v-agenda" hidden>
-  <div class="glass-panel">
-    <div class="panel-title">Agendar compromisso</div>
-    <div class="form-vertical">
-      <div class="input-group"><label>Descrição</label><input id="a-desc" placeholder="Ex.: Parcela do seguro"></div>
-      <div class="input-group"><label>Valor total (R$)</label><input id="a-val" type="number" min=".01" step=".01" placeholder="0,00"></div>
-      <div class="input-group"><label>Fluxo</label><select id="a-tipo"><option value="despesa">🔴 A pagar</option><option value="receita">🟢 A receber</option></select></div>
-      <div class="input-group"><label>Vencimento inicial</label><input id="a-venc" type="date"></div>
-      <div class="input-group"><label>Frequência / parcelas</label><select id="a-recorrencia"><option value="unica">Parcela única</option><option value="mensal">Recorrência mensal</option><option value="2">Dividir em 2x</option><option value="3">Dividir em 3x</option><option value="6">Dividir em 6x</option><option value="12">Dividir em 12x</option></select></div>
-      <button class="btn-action" onclick="saveAgenda()">Inserir na agenda</button>
-    </div>
-  </div>
-  <div class="glass-panel"><div class="panel-title">Agenda cronológica</div><div class="row-fields" style="margin-bottom:12px"><select id="a-filter-status" onchange="renderAgenda()"><option value="todos">Todos os status</option><option value="pendente">Pendentes</option><option value="atrasado">Atrasados</option><option value="pago">Pagos</option></select><select id="a-sort-order" onchange="renderAgenda()"><option value="venc-asc">Mais próximos</option><option value="venc-desc">Mais distantes</option><option value="val-desc">Maior valor</option><option value="val-asc">Menor valor</option></select></div><div class="mobile-list" id="a-cards-container"></div></div>
-</section>
-
-<section id="v-wallets" hidden>
-  <div class="glass-panel"><div class="panel-title">Minhas contas e ativos</div><div class="mobile-list" id="w-cards-container"></div></div>
-  <div class="glass-panel"><div class="panel-title">Adicionar conta</div><div class="form-vertical"><div class="input-group"><label>Nome</label><input id="w-name" placeholder="Ex.: Banco principal"></div><div class="input-group"><label>Tipo</label><select id="w-type"><option>Conta Corrente</option><option>Conta Poupança</option><option>Carteira Física</option><option>Cartão de Crédito</option><option>Investimentos</option></select></div><div class="input-group"><label>Saldo inicial (R$)</label><input id="w-saldo" type="number" step=".01" value="0"></div><button class="btn-action" onclick="saveWallet()">Criar conta</button></div></div>
-  <div class="glass-panel"><div class="panel-title">Transferência interna</div><div class="form-vertical"><div class="input-group"><label>Origem</label><select id="x-origin"></select></div><div class="input-group"><label>Destino</label><select id="x-dest"></select></div><div class="input-group"><label>Valor (R$)</label><input id="x-val" type="number" min=".01" step=".01" placeholder="0,00"></div><button class="btn-action" onclick="executeTransfer()">Executar transferência</button></div></div>
-</section>
-
-<section id="v-goals" hidden>
-  <div class="glass-panel"><div class="panel-title">Metas de economia</div><div class="mobile-list" id="g-cards-container"></div></div>
-  <div class="glass-panel"><div class="panel-title">Criar nova meta</div><div class="form-vertical"><div class="input-group"><label>Nome</label><input id="g-name" placeholder="Ex.: Viagem"></div><div class="input-group"><label>Valor alvo (R$)</label><input id="g-target" type="number" min=".01" step=".01" placeholder="5000"></div><div class="input-group"><label>Já guardado (R$)</label><input id="g-current" type="number" min="0" step=".01" value="0"></div><div class="input-group"><label>Prazo</label><input id="g-deadline" type="date"></div><button class="btn-action" onclick="saveGoal()">Criar meta</button></div></div>
-</section>
-
-<section id="v-config" hidden>
-  <div class="glass-panel">
-    <div class="panel-title">Backup e exportação</div>
-    <p class="sub-info" style="margin-bottom:14px">Faça backups regularmente. Os dados ficam salvos neste navegador/aparelho; limpar os dados do aplicativo pode apagá-los.</p>
-    <button class="btn-action" onclick="exportBackup()" style="margin-bottom:10px">📥 Exportar backup JSON</button>
-    <button class="btn-action" onclick="document.getElementById('backupFile').click()" style="margin-bottom:10px">📤 Importar backup JSON</button>
-    <input type="file" id="backupFile" accept=".json,application/json" hidden onchange="importBackup(event)">
-    <button class="btn-action" onclick="exportCSV()">📊 Exportar movimentações CSV</button>
-    <button class="btn-action" onclick="resetAllData()" style="margin-top:20px;background:linear-gradient(135deg,#991b1b,#ef4444)">Apagar todos os dados</button>
-  </div>
-
-  <div class="glass-panel">
-    <div class="panel-title">🛟 Recuperação de dados</div>
-    <p class="sub-info">Procure todas as chaves acessíveis do localStorage, inclusive chaves desconhecidas que possam conter registros antigos.</p>
-    <div class="recovery-warning" style="margin-top:12px">A busca não modifica nem apaga os dados encontrados. Antes de restaurar registros, a ferramenta tentará criar uma cópia de segurança dos dados atuais. A recuperação não consegue recriar informações apagadas definitivamente nem acessar automaticamente o armazenamento isolado de outro navegador ou APK.</div>
-    <div class="recovery-stats">
-      <div class="recovery-stat"><strong id="recovery-key-count">—</strong><span>Chaves encontradas</span></div>
-      <div class="recovery-stat"><strong id="recovery-size">—</strong><span>Tamanho aproximado</span></div>
-    </div>
-    <div class="recovery-toolbar">
-      <button class="btn-action" onclick="scanLocalStorage()">🔎 Procurar todos os dados</button>
-      <input id="recovery-search" placeholder="Pesquisar chaves ou conteúdo..." oninput="filterRecoveryResults()" aria-label="Pesquisar dados encontrados">
-      <button class="btn-action" onclick="exportAllLocalStorage()">📥 Exportar todas as chaves encontradas</button>
-    </div>
-    <p class="sub-info" id="recovery-status" aria-live="polite">Toque em “Procurar todos os dados” para iniciar a busca.</p>
-    <div id="recovery-results" style="margin-top:12px"></div>
-    <div id="recovery-preview-area" hidden style="margin-top:16px">
-      <div class="panel-title"><span id="recovery-preview-title">Conteúdo encontrado</span></div>
-      <textarea id="recovery-preview" class="recovery-preview" readonly spellcheck="false" aria-label="Conteúdo dos dados encontrados"></textarea>
-      <div class="recovery-toolbar">
-        <button class="btn-action" onclick="copyRecoveryPreview()">📋 Copiar conteúdo</button>
-        <button class="btn-small btn-neutral" onclick="closeRecoveryPreview()" style="padding:12px">Fechar visualização</button>
+    <div class="metrics">
+      <div class="metric">
+        <label>Saldo consolidado</label>
+        <strong id="metric-balance" class="money">R$ 0,00</strong>
+        <small>Todas as contas</small>
+      </div>
+      <div class="metric">
+        <label>Receitas do mês</label>
+        <strong id="metric-income" class="money positive">R$ 0,00</strong>
+        <small>Entradas efetivas</small>
+      </div>
+      <div class="metric">
+        <label>Despesas do mês</label>
+        <strong id="metric-expense" class="money negative">R$ 0,00</strong>
+        <small>Saídas efetivas</small>
+      </div>
+      <div class="metric">
+        <label>Economia mensal</label>
+        <strong id="metric-saving" class="money">0%</strong>
+        <small>Receita menos despesas</small>
       </div>
     </div>
-  </div>
-</section>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Evolução mensal</div>
+          <span class="subtle">Últimos 6 meses</span>
+        </div>
+        <div class="chartbox"><canvas id="balance-chart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Despesas por categoria</div>
+          <span class="subtle">Mês atual</span>
+        </div>
+        <div class="chartbox"><canvas id="category-chart"></canvas></div>
+        <p class="table-note">Toque em uma categoria do gráfico para filtrar as movimentações.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Próximos compromissos</div>
+        <button class="btn secondary small" onclick="navigate('launch');setLaunchMode('agenda')">Ver agenda</button>
+      </div>
+      <div id="upcoming-list" class="list"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Movimentações recentes</div>
+        <button class="btn secondary small" onclick="navigate('launch')">Ver todas</button>
+      </div>
+      <div id="recent-list" class="list"></div>
+    </div>
+  </section>
+
+  <!-- LANÇAR + AGENDA -->
+  <section id="view-launch" class="view">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Lançamentos financeiros</div>
+          <div class="subtle">Registre entradas, despesas, transferências e compromissos.</div>
+        </div>
+      </div>
+
+      <div class="segmented" style="margin-bottom:16px">
+        <button id="mode-transaction" class="active" onclick="setLaunchMode('transaction')">Movimentação</button>
+        <button id="mode-agenda" onclick="setLaunchMode('agenda')">Agendar / Parcelar</button>
+      </div>
+
+      <div id="transaction-form-wrap">
+        <form id="transaction-form" class="form-grid">
+          <input type="hidden" id="transaction-id">
+          <div class="field">
+            <label for="transaction-type">Tipo</label>
+            <select id="transaction-type" required>
+              <option value="expense">Despesa</option>
+              <option value="income">Receita</option>
+              <option value="transfer">Transferência entre contas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="transaction-date">Data</label>
+            <input id="transaction-date" type="date" required>
+          </div>
+          <div class="field full">
+            <label for="transaction-description">Descrição</label>
+            <input id="transaction-description" maxlength="120" placeholder="Ex.: supermercado, salário..." required>
+          </div>
+          <div class="field">
+            <label for="transaction-amount">Valor (R$)</label>
+            <input id="transaction-amount" type="number" min="0.01" step="0.01" placeholder="0,00" required>
+          </div>
+          <div class="field" id="transaction-category-wrap">
+            <label for="transaction-category">Categoria</label>
+            <select id="transaction-category" required></select>
+          </div>
+          <div class="field" id="transaction-wallet-wrap">
+            <label for="transaction-wallet">Conta</label>
+            <select id="transaction-wallet" required></select>
+          </div>
+          <div class="field hidden" id="transaction-destination-wrap">
+            <label for="transaction-destination">Conta de destino</label>
+            <select id="transaction-destination"></select>
+          </div>
+          <div class="field full">
+            <label for="transaction-tags">Tags (opcional)</label>
+            <input id="transaction-tags" maxlength="160" placeholder="Ex.: casa, urgente, trabalho">
+          </div>
+          <div class="field full">
+            <label for="transaction-notes">Observações (opcional)</label>
+            <textarea id="transaction-notes" rows="2" maxlength="500" placeholder="Detalhes adicionais"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn" id="transaction-submit" type="submit">Salvar movimentação</button>
+            <button class="btn secondary hidden" id="transaction-cancel" type="button" onclick="resetTransactionForm()">Cancelar edição</button>
+            <button class="btn secondary" type="button" onclick="startVoiceInput()">🎙 Ditado por voz</button>
+          </div>
+        </form>
+        <div class="table-note">O ditado por voz preenche os campos para você revisar antes de salvar.</div>
+      </div>
+
+      <div id="agenda-form-wrap" class="hidden">
+        <form id="agenda-form" class="form-grid">
+          <input type="hidden" id="agenda-id">
+          <div class="field">
+            <label for="agenda-type">Tipo</label>
+            <select id="agenda-type" required>
+              <option value="expense">Despesa prevista</option>
+              <option value="income">Receita prevista</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="agenda-date">Primeiro vencimento</label>
+            <input id="agenda-date" type="date" required>
+          </div>
+          <div class="field full">
+            <label for="agenda-description">Descrição</label>
+            <input id="agenda-description" maxlength="120" placeholder="Ex.: compra parcelada" required>
+          </div>
+          <div class="field">
+            <label for="agenda-amount">Valor total (R$)</label>
+            <input id="agenda-amount" type="number" min="0.01" step="0.01" required>
+          </div>
+          <div class="field">
+            <label for="agenda-category">Categoria</label>
+            <select id="agenda-category" required></select>
+          </div>
+          <div class="field">
+            <label for="agenda-wallet">Conta</label>
+            <select id="agenda-wallet" required></select>
+          </div>
+          <div class="field">
+            <label for="agenda-installments">Parcelamento</label>
+            <select id="agenda-installments">
+              <option value="1">À vista / 1 vez</option>
+              <option value="2">2 parcelas</option>
+              <option value="3">3 parcelas</option>
+              <option value="4">4 parcelas</option>
+              <option value="6">6 parcelas</option>
+              <option value="10">10 parcelas</option>
+              <option value="12">12 parcelas</option>
+              <option value="24">24 parcelas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="agenda-frequency">Frequência</label>
+            <select id="agenda-frequency">
+              <option value="once">Uma vez</option>
+              <option value="monthly">Mensal recorrente</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="agenda-notes">Observações (opcional)</label>
+            <textarea id="agenda-notes" rows="2" maxlength="500"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn" id="agenda-submit" type="submit">Salvar compromisso</button>
+            <button class="btn secondary hidden" id="agenda-cancel" type="button" onclick="resetAgendaForm()">Cancelar edição</button>
+          </div>
+        </form>
+        <p id="installment-preview" class="subtle" style="margin-top:12px"></p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Movimentações registradas</div>
+        <button class="btn secondary small" onclick="exportTransactionsCSV()">Exportar CSV</button>
+      </div>
+      <div class="filters">
+        <input id="filter-search" placeholder="Buscar descrição, tag ou categoria">
+        <input id="filter-month" type="month" aria-label="Filtrar por mês">
+        <select id="filter-type" aria-label="Filtrar por tipo">
+          <option value="all">Todos os tipos</option>
+          <option value="income">Receitas</option>
+          <option value="expense">Despesas</option>
+          <option value="transfer">Transferências</option>
+        </select>
+        <select id="filter-wallet" aria-label="Filtrar por conta"></select>
+      </div>
+      <div id="transaction-list" class="list"></div>
+      <div class="table-note" id="transaction-count"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Agenda de compromissos</div>
+        <span class="subtle">Pendentes e recorrentes</span>
+      </div>
+      <div id="agenda-list" class="list"></div>
+    </div>
+  </section>
+    <!-- CONTAS -->
+  <section id="view-wallets" class="view">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Minhas contas</div>
+          <div class="subtle">Gerencie saldos e transfira dinheiro entre contas.</div>
+        </div>
+      </div>
+      <div id="wallet-summary" class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+      <form id="wallet-form" class="form-grid">
+        <input type="hidden" id="wallet-id">
+        <div class="field">
+          <label for="wallet-name">Nome da conta</label>
+          <input id="wallet-name" maxlength="60" placeholder="Ex.: Conta principal" required>
+        </div>
+        <div class="field">
+          <label for="wallet-type">Tipo de conta</label>
+          <select id="wallet-type">
+            <option value="checking">Conta corrente</option>
+            <option value="cash">Dinheiro em espécie</option>
+            <option value="savings">Poupança</option>
+            <option value="digital">Conta digital</option>
+            <option value="other">Outra</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="wallet-opening">Saldo inicial (R$)</label>
+          <input id="wallet-opening" type="number" step="0.01" value="0" required>
+        </div>
+        <div class="form-actions">
+          <button id="wallet-submit" class="btn" type="submit">Adicionar conta</button>
+          <button id="wallet-cancel" class="btn secondary hidden" type="button" onclick="resetWalletForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Contas cadastradas</div></div>
+      <div id="wallet-list" class="list"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Transferência entre contas</div></div>
+      <form id="transfer-form" class="form-grid">
+        <div class="field">
+          <label for="transfer-from">Conta de origem</label>
+          <select id="transfer-from" required></select>
+        </div>
+        <div class="field">
+          <label for="transfer-to">Conta de destino</label>
+          <select id="transfer-to" required></select>
+        </div>
+        <div class="field">
+          <label for="transfer-amount">Valor (R$)</label>
+          <input id="transfer-amount" type="number" min="0.01" step="0.01" required>
+        </div>
+        <div class="field">
+          <label for="transfer-date">Data</label>
+          <input id="transfer-date" type="date" required>
+        </div>
+        <div class="field full">
+          <label for="transfer-description">Descrição</label>
+          <input id="transfer-description" maxlength="120" placeholder="Ex.: transferência para poupança">
+        </div>
+        <div class="form-actions">
+          <button class="btn" type="submit">Realizar transferência</button>
+        </div>
+      </form>
+      <p class="table-note">Transferências alteram o saldo das contas, mas não são contabilizadas como receita ou despesa no consolidado.</p>
+    </div>
+  </section>
+
+  <!-- RELATÓRIOS -->
+  <section id="view-reports" class="view">
+    <div class="report-head">
+      <h1>GbFinance Mobile Pro</h1>
+      <p>Relatório financeiro</p>
+      <p id="print-period"></p>
+    </div>
+    <div class="panel no-print">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Relatórios financeiros</div>
+          <div class="subtle">Analise receitas, despesas e movimentações por período.</div>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="report-start">Data inicial</label>
+          <input type="date" id="report-start">
+        </div>
+        <div class="field">
+          <label for="report-end">Data final</label>
+          <input type="date" id="report-end">
+        </div>
+        <div class="field full">
+          <label for="report-wallet">Conta</label>
+          <select id="report-wallet"></select>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="renderReport()" type="button">Gerar relatório</button>
+          <button class="btn secondary" onclick="window.print()" type="button">Salvar em PDF / Imprimir</button>
+          <button class="btn secondary" onclick="exportReportCSV()" type="button">Exportar CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <label>Receitas</label>
+        <strong id="report-income" class="money positive">R$ 0,00</strong>
+      </div>
+      <div class="metric">
+        <label>Despesas</label>
+        <strong id="report-expense" class="money negative">R$ 0,00</strong>
+      </div>
+      <div class="metric">
+        <label>Resultado</label>
+        <strong id="report-result" class="money">R$ 0,00</strong>
+      </div>
+      <div class="metric">
+        <label>Movimentações</label>
+        <strong id="report-count">0</strong>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Despesas por categoria</div></div>
+      <div id="report-category-list" class="list"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Movimentações do período</div></div>
+      <div id="report-transaction-list" class="list"></div>
+    </div>
+  </section>
+
+  <!-- CONFIGURAÇÕES -->
+  <section id="view-settings" class="view">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Configurações</div>
+          <div class="subtle">Personalize e proteja seus dados financeiros.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="theme-setting">Aparência</label>
+        <select id="theme-setting">
+          <option value="dark">Modo escuro</option>
+          <option value="light">Modo claro</option>
+        </select>
+      </div>
+      <div style="height:16px"></div>
+      <div class="field">
+        <label for="privacy-setting">Privacidade dos valores</label>
+        <select id="privacy-setting">
+          <option value="off">Mostrar valores</option>
+          <option value="on">Ocultar valores</option>
+        </select>
+      </div>
+      <div style="height:16px"></div>
+      <div class="field">
+        <label for="notifications-setting">Notificações do navegador</label>
+        <select id="notifications-setting">
+          <option value="off">Desativadas</option>
+          <option value="on">Ativar notificações</option>
+        </select>
+      </div>
+      <div style="height:10px"></div>
+      <button class="btn" type="button" onclick="saveSettings()">Salvar configurações</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Backup e restauração</div>
+      </div>
+      <p class="subtle" style="margin-bottom:14px">Exporte seus dados para um arquivo JSON e guarde uma cópia segura. A restauração substitui os dados atuais.</p>
+      <div class="btn-row">
+        <button class="btn" type="button" onclick="exportBackup()">Exportar backup JSON</button>
+        <button class="btn secondary" type="button" onclick="document.getElementById('backup-file').click()">Restaurar backup</button>
+        <input id="backup-file" class="hidden" type="file" accept=".json,application/json">
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Assistente financeiro</div></div>
+      <p class="subtle" id="settings-insight">O assistente analisa suas movimentações salvas para destacar padrões de receitas e despesas.</p>
+      <button class="btn secondary" style="margin-top:12px" type="button" onclick="refreshAssistant()">Atualizar análise</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Armazenamento local</div></div>
+      <p class="subtle">Os dados ficam armazenados neste navegador ou aparelho. Limpar os dados do navegador pode apagar suas informações. Faça backups regularmente.</p>
+      <div style="height:14px"></div>
+      <button class="btn danger" type="button" onclick="resetAllData()">Apagar todos os dados financeiros</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Sobre o aplicativo</div></div>
+      <p class="subtle">GbFinance Mobile Pro · Controle financeiro pessoal · Armazenamento local · Versão 2.0</p>
+    </div>
+  </section>
 </main>
 
+<button class="fab" type="button" aria-label="Novo lançamento" onclick="navigate('launch');setLaunchMode('transaction')">+</button>
+
 <nav class="bottom-nav">
-  <button class="nav-item active" id="nb-1" onclick="switchTab(1)"><span>📊</span>Dash</button>
-  <button class="nav-item" id="nb-2" onclick="switchTab(2)"><span>💸</span>Lançar</button>
-  <button class="nav-item" id="nb-3" onclick="switchTab(3)"><span>📅</span>Agenda</button>
-  <button class="nav-item" id="nb-4" onclick="switchTab(4)"><span>💳</span>Contas</button>
-  <button class="nav-item" id="nb-5" onclick="switchTab(5)"><span>🏆</span>Metas</button>
-  <button class="nav-item" id="nb-6" onclick="switchTab(6)"><span>⚙️</span>Config</button>
+  <button class="nav-item active" data-view="home" onclick="navigate('home')"><span>⌂</span>Início</button>
+  <button class="nav-item" data-view="launch" onclick="navigate('launch')"><span>＋</span>Lançar</button>
+  <button class="nav-item" data-view="wallets" onclick="navigate('wallets')"><span>▤</span>Contas</button>
+  <button class="nav-item" data-view="reports" onclick="navigate('reports')"><span>▥</span>Relatórios</button>
+  <button class="nav-item" data-view="settings" onclick="navigate('settings')"><span>⚙</span>Config.</button>
 </nav>
-
 <script>
-"use strict";
+'use strict';
 
-/* ---------- Armazenamento e estado ---------- */
-const STORAGE_KEYS={transactions:"gb_trans_mob",agenda:"gb_agen_mob",wallets:"gb_wall_mob",goals:"gb_goals_mob"};
-
-function readStore(key,fallback){
-  try{
-    const value=localStorage.getItem(key);
-    if(value===null)return fallback;
-    const parsed=JSON.parse(value);
-    return Array.isArray(parsed)?parsed:fallback;
-  }catch(e){console.error("Falha ao ler armazenamento:",key,e);return fallback;}
-}
-
-let transactions=readStore(STORAGE_KEYS.transactions,[]);
-let agenda=readStore(STORAGE_KEYS.agenda,[]);
-let wallets=readStore(STORAGE_KEYS.wallets,[
-  {id:"w1",name:"Conta Corrente",type:"Conta Corrente",initial:0},
-  {id:"w2",name:"Dinheiro Físico",type:"Carteira Física",initial:0}
-]);
-let goals=readStore(STORAGE_KEYS.goals,[]);
-let privacyMode=false;
-let chartLine=null;
-let chartBar=null;
-
-function persist(key,value){
-  try{localStorage.setItem(key,JSON.stringify(value));return true;}
-  catch(e){console.error(e);alert("Não foi possível salvar os dados. Verifique o espaço disponível no aparelho.");return false;}
-}
-function saveAll(){
-  return persist(STORAGE_KEYS.transactions,transactions)&&persist(STORAGE_KEYS.agenda,agenda)&&persist(STORAGE_KEYS.wallets,wallets)&&persist(STORAGE_KEYS.goals,goals);
-}
-
-/* ---------- Categorias ---------- */
-const categories={
-  receita:{
-    "💼 Trabalho":["Salário","13º Salário","Férias","Vale","Bônus","Gratificação"],
-    "💰 Renda Extra":["Freelance","Bicos","Serviços Prestados","Vendas"],
-    "🎁 Outros Ganhos":["Presentes Recebidos","Pix Recebidas","Outros ganhos"],
-    "🔁 Transferência":["Interna"]
-  },
-  despesa:{
-    "🏠 Moradia":["Parcela compra","Aluguel","Condomínio","Água","Energia Elétrica","Gás","Internet","Telefone","IPTU","Manutenção"],
-    "🍽️ Alimentação":["Supermercado","Padaria","Açougue","Restaurante","Lanchonete","Delivery","Bebidas"],
-    "🚗 Transporte":["Combustível","Estacionamento","Pedágio","Manutenção","Seguro","IPVA","Ônibus","Táxi","Aplicativo de Transporte"],
-    "⚕️ Farmácia":["Medicamentos","Conveniência","Perfumaria"],
-    "🏥 Saúde":["Consulta Médica","Dentista","Psicólogo","Exames","Plano de Saúde"],
-    "📚 Educação":["Escola","Faculdade","Cursos","Livros","Material Escolar"],
-    "👕 Vestuário":["Roupas","Calçados","Acessórios"],
-    "🛒 Compras":["Eletrônicos","Móveis","Eletrodomésticos","Decoração"],
-    "🎮 Lazer e Entretenimento":["Futebol","Cinema","Jogos","Passeios","Viagens","Eventos"],
-    "📺 Assinaturas":["Streaming","Música","Aplicativos","Armazenamento em Nuvem"],
-    "💳 Financeiro":["Fatura Cartão de Crédito","Empréstimos","Financiamentos","Tarifas Bancárias","Juros"],
-    "📦 Outros":["Gastos Diversos","Emergências","Imprevistos"],
-    "🔁 Transferência":["Interna"]
-  }
+const STORAGE = {
+  transactions: 'gb_trans_mob',
+  agenda: 'gb_agen_mob',
+  wallets: 'gb_wall_mob',
+  theme: 'gb_theme_mob',
+  privacy: 'gb_privacy_mob',
+  notifications: 'gb_notifications_mob'
 };
 
-function todayLocal(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-}
-function shiftMonth(dateString,amount){
-  const [y,m,d]=dateString.split("-").map(Number);
-  const target=new Date(y,m-1+amount,1);
-  const lastDay=new Date(target.getFullYear(),target.getMonth()+1,0).getDate();
-  target.setDate(Math.min(d,lastDay));
-  return `${target.getFullYear()}-${String(target.getMonth()+1).padStart(2,"0")}-${String(target.getDate()).padStart(2,"0")}`;
-}
-function money(value){
-  const n=Number(value)||0;
-  return privacyMode?"R$ •••••":n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-}
-function safeText(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function dateBR(s){
-  if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return "—";
-  return s.split("-").reverse().join("/");
-}
-function isTransfer(t){return t.cat==="🔁 Transferência"||(t.tags||[]).includes("transferencia");}
-function showEmpty(container,message){container.innerHTML=`<div class="empty-state">${safeText(message)}</div>`;}
+const CATEGORIES = {
+  income: ['Salário','Freelance','Vendas','Investimentos','Presente','Outros'],
+  expense: ['Alimentação','Moradia','Transporte','Saúde','Educação','Lazer','Compras','Contas','Assinaturas','Impostos','Outros']
+};
 
-/* ---------- Inicialização ---------- */
-document.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("t-date").value=todayLocal();
-  document.getElementById("a-venc").value=todayLocal();
-  document.getElementById("g-deadline").value=todayLocal();
-  document.getElementById("f-date").value=todayLocal().slice(0,7);
-  document.getElementById("cost-start-date").value=todayLocal().slice(0,7)+"-01";
-  document.getElementById("cost-end-date").value=todayLocal();
-  populateSelectors();
-  renderApp();
-  checkReminders();
-});
+const DEFAULT_WALLETS = [
+  {id:'wallet_default',name:'Conta principal',type:'checking',opening:0,createdAt:new Date().toISOString()}
+];
 
-function toggleTheme(){
-  document.body.classList.toggle("light-theme");
-  if(chartLine||chartBar)renderCharts();
+let transactions = [];
+let agenda = [];
+let wallets = [];
+let balanceChart = null;
+let categoryChart = null;
+let privacyEnabled = false;
+let notificationEnabled = false;
+let currentLaunchMode = 'transaction';
+
+const $ = id => document.getElementById(id);
+const uid = prefix => prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,9);
+
+function safeNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
 }
-function togglePrivacy(){
-  privacyMode=!privacyMode;
-  document.getElementById("btn-privacy").textContent=privacyMode?"🙈":"👁️";
-  document.getElementById("btn-privacy").style.opacity=privacyMode?"1":".7";
-  renderApp();
+
+function money(value) {
+  return safeNumber(value).toLocaleString('pt-BR',{
+    style:'currency',
+    currency:'BRL'
+  });
 }
-function switchTab(idx){
-  for(let i=1;i<=6;i++){
-    document.getElementById(["","v-dash","v-trans","v-agenda","v-wallets","v-goals","v-config"][i]).hidden=i!==idx;
-    document.getElementById("nb-"+i).classList.toggle("active",i===idx);
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  })[character]);
+}
+
+function localDate(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth()+1).padStart(2,'0');
+  const day = String(date.getDate()).padStart(2,'0');
+  return `${year}-${month}-${day}`;
+}
+
+function dateFromString(value) {
+  if (!value) return new Date();
+  const parts = String(value).split('-').map(Number);
+  if (parts.length !== 3 || parts.some(part => !Number.isFinite(part))) {
+    return new Date();
   }
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-function pushNotification(message){
-  const center=document.getElementById("notification-center");
-  const toast=document.createElement("div");
-  toast.className="toast";toast.textContent=message;center.appendChild(toast);
-  setTimeout(()=>toast.remove(),3500);
-}
-function fillSelect(select,items,selected){
-  select.replaceChildren();
-  items.forEach(item=>{
-    const op=document.createElement("option");op.value=item.value;op.textContent=item.label;select.appendChild(op);
-  });
-  if(selected!==undefined&&items.some(i=>String(i.value)===String(selected)))select.value=String(selected);
-}
-function populateSelectors(){
-  const oldWallet=document.getElementById("t-wallet").value;
-  const walletOptions=wallets.map(w=>({value:w.id,label:w.name}));
-  ["t-wallet","x-origin","x-dest"].forEach(id=>{
-    const el=document.getElementById(id),old=el.value;
-    fillSelect(el,walletOptions,id==="t-wallet"?oldWallet:old);
-  });
-  populateCategories();
-}
-function populateCategories(selectedCat,selectedSub){
-  const tipo=document.getElementById("t-tipo").value;
-  const cat=document.getElementById("t-cat");
-  fillSelect(cat,Object.keys(categories[tipo]).map(c=>({value:c,label:c})),selectedCat||cat.value);
-  updateSubcats(selectedSub);
-}
-function updateSubcats(selectedSub){
-  const tipo=document.getElementById("t-tipo").value,cat=document.getElementById("t-cat").value;
-  const subs=categories[tipo]?.[cat]||["Outros"];
-  fillSelect(document.getElementById("t-subcat"),subs.map(s=>({value:s,label:s})),selectedSub);
+  return new Date(parts[0],parts[1]-1,parts[2],12);
 }
 
-/* ---------- Transações ---------- */
-function resetTransactionForm(){
-  document.getElementById("t-id").value="";
-  document.getElementById("t-desc").value="";
-  document.getElementById("t-val").value="";
-  document.getElementById("t-tipo").value="receita";
-  document.getElementById("t-tags").value="";
-  document.getElementById("t-date").value=todayLocal();
-  document.getElementById("form-trans-title").textContent="Nova transação";
-  document.getElementById("cancel-edit").style.display="none";
-  populateCategories();
-}
-function saveTransaction(){
-  const id=document.getElementById("t-id").value;
-  const desc=document.getElementById("t-desc").value.trim();
-  const valor=Number(document.getElementById("t-val").value);
-  const tipo=document.getElementById("t-tipo").value;
-  const cat=document.getElementById("t-cat").value;
-  const subcat=document.getElementById("t-subcat").value;
-  const wallet=document.getElementById("t-wallet").value;
-  const data=document.getElementById("t-date").value;
-  const tags=document.getElementById("t-tags").value.split(",").map(x=>x.trim()).filter(Boolean);
-  if(!desc||!Number.isFinite(valor)||valor<=0||!data)return alert("Informe uma descrição, um valor positivo e uma data válida.");
-  if(!wallets.some(w=>w.id===wallet))return alert("Selecione uma carteira válida.");
-  if(id!==""){
-    const index=transactions.findIndex(t=>String(t.id)===id);
-    if(index<0){alert("Este lançamento não foi encontrado. Atualize a tela e tente novamente.");resetTransactionForm();return;}
-    transactions[index]={...transactions[index],desc,valor,tipo,cat,subcat,wallet,tags,data};
-  }else{
-    transactions.push({id:crypto.randomUUID?.()||String(Date.now())+"_"+Math.random().toString(36).slice(2),desc,valor,tipo,cat,subcat,wallet,tags,data});
-  }
-  if(!persist(STORAGE_KEYS.transactions,transactions))return;
-  resetTransactionForm();renderApp();pushNotification("Lançamento salvo com sucesso.");
-}
-function editTrans(id){
-  const t=transactions.find(x=>String(x.id)===String(id));
-  if(!t)return pushNotification("Lançamento não encontrado.");
-  document.getElementById("t-id").value=t.id;
-  document.getElementById("t-desc").value=t.desc||"";
-  document.getElementById("t-val").value=t.valor;
-  document.getElementById("t-tipo").value=t.tipo;
-  document.getElementById("t-tags").value=(t.tags||[]).join(", ");
-  document.getElementById("t-date").value=t.data||todayLocal();
-  populateCategories(t.cat,t.subcat);
-  document.getElementById("t-wallet").value=t.wallet||"";
-  document.getElementById("form-trans-title").textContent="Editar transação";
-  document.getElementById("cancel-edit").style.display="block";
-  switchTab(2);
-}
-function deleteTrans(id){
-  if(!confirm("Deseja excluir este lançamento?"))return;
-  transactions=transactions.filter(t=>String(t.id)!==String(id));
-  persist(STORAGE_KEYS.transactions,transactions);renderApp();pushNotification("Lançamento excluído.");
-}
-function clearTransactionFilters(){
-  document.getElementById("f-search").value="";
-  document.getElementById("f-date").value="";
-  renderApp();
-}
-function renderTransactions(){
-  const container=document.getElementById("t-cards-container");
-  const search=document.getElementById("f-search").value.trim().toLowerCase();
-  const month=document.getElementById("f-date").value;
-  const filtered=[...transactions].sort((a,b)=>(b.data||"").localeCompare(a.data||"")).filter(t=>{
-    const haystack=[t.desc,t.cat,t.subcat,...(Array.isArray(t.tags)?t.tags:[])].join(" ").toLowerCase();
-    return (!search||haystack.includes(search))&&(!month||(t.data||"").startsWith(month));
-  });
-  container.replaceChildren();
-  if(!filtered.length)return showEmpty(container,"Nenhuma movimentação encontrada.");
-  filtered.forEach(t=>{
-    const card=document.createElement("div");card.className="list-card";
-    const tags=(Array.isArray(t.tags)?t.tags:[]).map(tag=>`<span class="tag-badge">#${safeText(tag)}</span>`).join("");
-    card.innerHTML=`<div class="list-card-details"><h5>${safeText(t.desc)}</h5><p>${dateBR(t.data)} · ${safeText(t.cat||"Sem categoria")}</p><p>${safeText(t.subcat||"")}</p><div>${tags}</div></div><div class="list-card-right"><span class="amt" style="color:${t.tipo==="receita"?"var(--green)":"var(--red)"}">${t.tipo==="receita"?"+":"−"} ${money(t.valor)}</span><div class="actions-area"><button aria-label="Editar" onclick="editTrans('${safeText(t.id)}')">📝</button><button aria-label="Excluir" onclick="deleteTrans('${safeText(t.id)}')">🗑️</button></div></div>`;
-    container.appendChild(card);
-  });
+function formatDate(value) {
+  if (!value) return 'Sem data';
+  return dateFromString(value).toLocaleDateString('pt-BR');
 }
 
-/* ---------- Agenda ---------- */
-function saveAgenda(){
-  const desc=document.getElementById("a-desc").value.trim(),valor=Number(document.getElementById("a-val").value);
-  const tipo=document.getElementById("a-tipo").value,venc=document.getElementById("a-venc").value,rec=document.getElementById("a-recorrencia").value;
-  if(!desc||!Number.isFinite(valor)||valor<=0||!venc)return alert("Preencha a descrição, um valor positivo e o vencimento.");
-  const idBase=Date.now();
-  if(rec==="unica"||rec==="mensal")agenda.push({id:String(idBase),desc,valor,tipo,venc,status:"Pendente",rec,paidDates:[]});
-  else{
-    const n=Number(rec),base=Math.round((valor/n)*100)/100;let allocated=0;
-    for(let i=1;i<=n;i++){
-      const part=i===n?Math.round((valor-allocated)*100)/100:base;allocated+=part;
-      agenda.push({id:String(idBase+i),desc:`${desc} (${i}/${n})`,valor:part,tipo,venc:shiftMonth(venc,i-1),status:"Pendente",rec:"unica",paidDates:[]});
-    }
-  }
-  if(!persist(STORAGE_KEYS.agenda,agenda))return;
-  document.getElementById("a-desc").value="";document.getElementById("a-val").value="";
-  renderApp();pushNotification("Compromisso adicionado à agenda.");
-}
-function liquidarConta(id){
-  const item=agenda.find(a=>String(a.id)===String(id));
-  if(!item||item.status==="Pago")return;
-  if(!confirm(`Confirmar liquidação de "${item.desc}" no valor de ${money(item.valor)}?`))return;
-  const wallet=wallets[0];if(!wallet)return alert("Crie uma carteira antes de liquidar uma conta.");
-  const transaction={id:String(Date.now())+"_liq",desc:`[LIQ] ${item.desc}`,valor:Number(item.valor),tipo:item.tipo,cat:item.tipo==="receita"?"💰 Renda Extra":"📦 Outros",subcat:"Liquidação da agenda",wallet:wallet.id,tags:["agenda"],data:todayLocal(),agendaId:item.id};
-  transactions.push(transaction);
-  if(item.rec==="mensal"){item.venc=shiftMonth(item.venc,1);item.paidDates=item.paidDates||[];item.paidDates.push(todayLocal());item.status="Pendente";}
-  else{item.status="Pago";item.paidDate=todayLocal();}
-  if(!persist(STORAGE_KEYS.transactions,transactions)||!persist(STORAGE_KEYS.agenda,agenda))return;
-  renderApp();pushNotification("Conta liquidada e lançamento registrado.");
-}
-function removerAgenda(id){
-  if(!confirm("Deseja remover este compromisso da agenda?"))return;
-  agenda=agenda.filter(a=>String(a.id)!==String(id));persist(STORAGE_KEYS.agenda,agenda);renderApp();
-}
-function renderAgenda(){
-  const container=document.getElementById("a-cards-container"),filter=document.getElementById("a-filter-status").value,sort=document.getElementById("a-sort-order").value,today=todayLocal();
-  const filtered=agenda.filter(a=>{
-    const overdue=a.status==="Pendente"&&a.venc<today;
-    if(filter==="pendente"&&(a.status!=="Pendente"||overdue))return false;
-    if(filter==="atrasado"&&!overdue)return false;
-    if(filter==="pago"&&a.status!=="Pago")return false;
-    return true;
-  }).sort((a,b)=>{
-    if(sort==="venc-asc")return(a.venc||"").localeCompare(b.venc||"");
-    if(sort==="venc-desc")return(b.venc||"").localeCompare(a.venc||"");
-    if(sort==="val-desc")return b.valor-a.valor;
-    if(sort==="val-asc")return a.valor-b.valor;
-    return 0;
-  });
-  container.replaceChildren();if(!filtered.length)return showEmpty(container,"Nenhum compromisso para este filtro.");
-  filtered.forEach(a=>{
-    const overdue=a.status==="Pendente"&&a.venc<today,card=document.createElement("div");card.className="list-card";
-    card.innerHTML=`<div class="list-card-details"><h5>${safeText(a.desc)}</h5><p>${a.tipo==="receita"?"A receber":"A pagar"} · Vencimento: ${dateBR(a.venc)}</p><p style="color:${overdue?"var(--red)":"var(--dim)"};font-weight:800">${overdue?"🚨 ATRASADO":safeText(a.status)}</p></div><div class="list-card-right"><span class="amt">${money(a.valor)}</span><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">${a.status==="Pendente"?`<button class="btn-small btn-green" onclick="liquidarConta('${safeText(a.id)}')">Liquidar</button>`:""}<button class="btn-small btn-red" onclick="removerAgenda('${safeText(a.id)}')">Excluir</button></div></div>`;
-    container.appendChild(card);
-  });
+function monthKey(value) {
+  return String(value || '').slice(0,7);
 }
 
-/* ---------- Carteiras e transferências ---------- */
-function walletBalances(){
-  const balances={};wallets.forEach(w=>balances[w.id]=Number(w.initial)||0);
-  transactions.forEach(t=>{
-    if(!(t.wallet in balances))return;
-    const value=Number(t.valor)||0;balances[t.wallet]+=t.tipo==="receita"?value:-value;
-  });
-  return balances;
+function currentMonth() {
+  return localDate().slice(0,7);
 }
-function saveWallet(){
-  const name=document.getElementById("w-name").value.trim(),type=document.getElementById("w-type").value,initial=Number(document.getElementById("w-saldo").value);
-  if(!name||!Number.isFinite(initial))return alert("Informe um nome e um saldo inicial válido.");
-  wallets.push({id:"w_"+Date.now(),name,type,initial});
-  if(!persist(STORAGE_KEYS.wallets,wallets))return;
-  document.getElementById("w-name").value="";document.getElementById("w-saldo").value="0";
-  populateSelectors();renderApp();pushNotification("Conta criada.");
-}
-function executeTransfer(){
-  const origin=document.getElementById("x-origin").value,dest=document.getElementById("x-dest").value,value=Number(document.getElementById("x-val").value);
-  if(!origin||!dest||origin===dest||!Number.isFinite(value)||value<=0)return alert("Selecione contas diferentes e informe um valor positivo.");
-  const date=todayLocal(),group="transferencia_"+Date.now();
-  transactions.push(
-    {id:group+"_out",desc:"Transferência para outra conta",valor:value,tipo:"despesa",cat:"🔁 Transferência",subcat:"Interna",wallet:origin,tags:["transferencia",group],data:date},
-    {id:group+"_in",desc:"Transferência recebida de outra conta",valor:value,tipo:"receita",cat:"🔁 Transferência",subcat:"Interna",wallet:dest,tags:["transferencia",group],data:date}
+
+function dateAddMonths(value, count) {
+  const original = dateFromString(value);
+  const day = original.getDate();
+  const target = new Date(
+    original.getFullYear(),
+    original.getMonth()+count,
+    1,
+    12
   );
-  if(!persist(STORAGE_KEYS.transactions,transactions))return;
-  document.getElementById("x-val").value="";renderApp();pushNotification("Transferência interna registrada.");
-}
-function renderWallets(){
-  const container=document.getElementById("w-cards-container"),balances=walletBalances();container.replaceChildren();
-  if(!wallets.length)return showEmpty(container,"Nenhuma conta cadastrada.");
-  wallets.forEach(w=>{
-    const card=document.createElement("div");card.className="list-card";const balance=balances[w.id]||0;
-    card.innerHTML=`<div class="list-card-details"><h5>${safeText(w.name)}</h5><p>${safeText(w.type)}</p><p>Saldo inicial: ${money(w.initial)}</p></div><div class="list-card-right"><span class="amt" style="color:${balance<0?"var(--red)":"var(--text)"}">${money(balance)}</span></div>`;
-    container.appendChild(card);
-  });
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth()+1,
+    0
+  ).getDate();
+  target.setDate(Math.min(day,lastDay));
+  return localDate(target);
 }
 
-/* ---------- Metas ---------- */
-function saveGoal(){
-  const name=document.getElementById("g-name").value.trim(),target=Number(document.getElementById("g-target").value),current=Number(document.getElementById("g-current").value||0),deadline=document.getElementById("g-deadline").value;
-  if(!name||!Number.isFinite(target)||target<=0||!Number.isFinite(current)||current<0)return alert("Informe um nome, um valor-alvo positivo e um saldo guardado válido.");
-  goals.push({id:String(Date.now()),name,target,current,deadline});
-  if(!persist(STORAGE_KEYS.goals,goals))return;
-  document.getElementById("g-name").value="";document.getElementById("g-target").value="";document.getElementById("g-current").value="0";
-  renderApp();pushNotification("Meta criada.");
-}
-function addGoalValue(id){
-  const input=prompt("Quanto deseja adicionar ou retirar? Use valor positivo para adicionar e negativo para retirar.");
-  if(input===null)return;
-  const amount=Number(input.replace(",","."));
-  if(!Number.isFinite(amount)||amount===0)return alert("Informe um valor diferente de zero.");
-  const goal=goals.find(g=>String(g.id)===String(id));if(!goal)return;
-  if((Number(goal.current)||0)+amount<0)return alert("O valor guardado não pode ficar negativo.");
-  goal.current=Math.round(((Number(goal.current)||0)+amount)*100)/100;
-  persist(STORAGE_KEYS.goals,goals);renderApp();pushNotification("Meta atualizada.");
-}
-function removeGoal(id){
-  if(!confirm("Deseja excluir esta meta?"))return;
-  goals=goals.filter(g=>String(g.id)!==String(id));persist(STORAGE_KEYS.goals,goals);renderApp();
-}
-function renderGoals(){
-  const container=document.getElementById("g-cards-container");container.replaceChildren();
-  if(!goals.length)return showEmpty(container,"Você ainda não criou metas.");
-  goals.forEach(g=>{
-    const target=Number(g.target)||0,current=Number(g.current)||0,percent=target>0?Math.min(100,Math.max(0,current/target*100)):0,card=document.createElement("div");card.className="list-card";
-    card.innerHTML=`<div class="list-card-details"><h5>${safeText(g.name)}</h5><p>Alvo: ${money(target)} · Prazo: ${dateBR(g.deadline)}</p><div class="progress"><div style="width:${percent}%"></div></div><p>Progresso: ${percent.toFixed(1)}% · Guardado: ${money(current)}</p></div><div class="list-card-right"><button class="btn-small btn-green" onclick="addGoalValue('${safeText(g.id)}')">± Valor</button><button class="btn-small btn-red" onclick="removeGoal('${safeText(g.id)}')">Excluir</button></div>`;
-    container.appendChild(card);
-  });
-}
-
-/* ---------- Indicadores e gráficos ---------- */
-function renderApp(){
-  const month=document.getElementById("f-date").value||todayLocal().slice(0,7),[year,monthNum]=month.split("-").map(Number);
-  const prev=monthNum===1?`${year-1}-12`:`${year}-${String(monthNum-1).padStart(2,"0")}`;
-  const currentYear=String(new Date().getFullYear());
-  const totals={rec:0,des:0,prevRec:0,prevDes:0,yearRec:0,yearDes:0,net:0};
-  wallets.forEach(w=>totals.net+=Number(w.initial)||0);
-  transactions.forEach(t=>{
-    const value=Number(t.valor)||0,income=t.tipo==="receita";totals.net+=income?value:-value;
-    if(isTransfer(t))return;
-    if((t.data||"").startsWith(month))totals[income?"rec":"des"]+=value;
-    if((t.data||"").startsWith(prev))totals[income?"prevRec":"prevDes"]+=value;
-    if((t.data||"").startsWith(currentYear))totals[income?"yearRec":"yearDes"]+=value;
-  });
-  const recVar=totals.prevRec>0?(totals.rec-totals.prevRec)/totals.prevRec*100:(totals.rec>0?100:0);
-  const desVar=totals.prevDes>0?(totals.des-totals.prevDes)/totals.prevDes*100:(totals.des>0?100:0);
-  document.getElementById("m-rec-var").innerHTML=`<span style="color:${recVar>=0?"var(--green)":"var(--red)"}">${recVar>=0?"+":""}${recVar.toFixed(0)}%</span> vs. mês anterior`;
-  document.getElementById("m-des-var").innerHTML=`<span style="color:${desVar<=0?"var(--green)":"var(--red)"}">${desVar>=0?"+":""}${desVar.toFixed(0)}%</span> vs. mês anterior`;
-  const annual=document.getElementById("dash-period-mode").value==="anual",rec=annual?totals.yearRec:totals.rec,des=annual?totals.yearDes:totals.des;
-  document.getElementById("m-rec-title").textContent=annual?"Receitas (ano)":"Receitas (mês)";
-  document.getElementById("m-des-title").textContent=annual?"Despesas (ano)":"Despesas (mês)";
-  document.getElementById("m-rec-val").textContent=money(rec);document.getElementById("m-des-val").textContent=money(des);
-  document.getElementById("m-saldo-total").textContent=money(totals.net);document.getElementById("m-taxa-eco").textContent=(rec>0?(rec-des)/rec*100:0).toFixed(0)+"%";
-  let projected=totals.net;
-  agenda.filter(a=>a.status==="Pendente").forEach(a=>projected+=a.tipo==="receita"?(Number(a.valor)||0):-(Number(a.valor)||0));
-  document.getElementById("m-proj-total").textContent="Previsto: "+money(projected);
-  let insight="Suas finanças estão equilibradas. Continue registrando suas movimentações.";
-  if(des>rec&&rec>0)insight="⚠️ Suas despesas superaram as receitas do período selecionado. Revise os gastos e as contas futuras.";
-  else if(desVar>20)insight=`📈 Suas despesas aumentaram ${desVar.toFixed(0)}% em relação ao mês anterior. Confira as categorias com maiores gastos.`;
-  else if(rec>0&&rec-des>rec/3)insight="🌟 Bom resultado: mais de um terço das receitas ficou disponível após as despesas registradas.";
-  else if(rec===0&&des>0)insight="Atenção: há despesas registradas sem receitas no período selecionado.";
-  document.getElementById("insight-text").textContent=insight;
-  document.getElementById("quick-summary-text").textContent=`No período selecionado: ${money(totals.rec)} em receitas e ${money(totals.des)} em despesas. Saldo total das carteiras: ${money(totals.net)}.`;
-  renderTransactions();renderAgenda();renderWallets();renderGoals();renderCharts();
-}
-function renderCharts(){
-  if(typeof Chart==="undefined")return;
-  const textColor=getComputedStyle(document.body).getPropertyValue("--dim").trim()||"#9ca3af";
-  const gridColor=document.body.classList.contains("light-theme")?"rgba(0,0,0,.08)":"rgba(255,255,255,.07)";
-  const annual=document.getElementById("dash-period-mode").value==="anual",grouped={};
-  [...transactions].sort((a,b)=>(a.data||"").localeCompare(b.data||"")).forEach(t=>{
-    if(isTransfer(t))return;
-    const key=annual?(t.data||"").slice(0,4):(t.data||"").slice(0,7);if(!key)return;
-    if(!grouped[key])grouped[key]=0;grouped[key]+=t.tipo==="receita"?(Number(t.valor)||0):-(Number(t.valor)||0);
-  });
-  const labels=Object.keys(grouped).sort();let running=wallets.reduce((sum,w)=>sum+(Number(w.initial)||0),0);
-  const values=labels.map(k=>(running+=grouped[k])),ctx=document.getElementById("c-timeline");
-  if(chartLine)chartLine.destroy();
-  chartLine=new Chart(ctx,{type:"line",data:{labels:labels.map(k=>annual?k:k.slice(5,7)+"/"+k.slice(0,4)),datasets:[{label:"Saldo acumulado",data:values,borderColor:"#818cf8",backgroundColor:"rgba(129,140,248,.12)",borderWidth:2,fill:true,tension:.25,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>privacyMode?"••••••":money(c.raw)}}},scales:{x:{ticks:{color:textColor,maxRotation:45},grid:{display:false}},y:{ticks:{color:textColor,callback:v=>privacyMode?"•••":Number(v).toLocaleString("pt-BR")},grid:{color:gridColor}}}}});
-  const type=document.getElementById("cost-filter-type").value,custom=document.getElementById("custom-cost-dates");
-  custom.style.display=type==="periodo"?"flex":"none";
-  const month=document.getElementById("f-date").value||todayLocal().slice(0,7),start=document.getElementById("cost-start-date").value,end=document.getElementById("cost-end-date").value,map={};
-  transactions.forEach(t=>{
-    if(t.tipo!=="despesa"||isTransfer(t))return;
-    let match=false;
-    if(type==="mes")match=(t.data||"").startsWith(month);
-    if(type==="ano")match=(t.data||"").startsWith(String(new Date().getFullYear()));
-    if(type==="periodo")match=!!start&&!!end&&start<=end&&t.data>=start&&t.data<=end;
-    if(match)map[t.cat||"Sem categoria"]=(map[t.cat||"Sem categoria"]||0)+(Number(t.valor)||0);
-  });
-  const catLabels=Object.keys(map).sort((a,b)=>map[b]-map[a]),ctxB=document.getElementById("c-categories");
-  if(chartBar)chartBar.destroy();
-  chartBar=new Chart(ctxB,{type:"bar",data:{labels:catLabels,datasets:[{label:"Despesas",data:catLabels.map(k=>map[k]),backgroundColor:["#818cf8","#a855f7","#f43f5e","#f59e0b","#10b981","#3b82f6","#ec4899","#14b8a6"],borderRadius:7}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>privacyMode?"••••••":money(c.raw)}}},scales:{x:{ticks:{color:textColor,callback:v=>privacyMode?"•••":v},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10}},grid:{display:false}}},onClick:(event,elements)=>{
-    if(!elements.length)return;
-    const category=catLabels[elements[0].index];document.getElementById("f-search").value=category;document.getElementById("f-date").value="";
-    switchTab(2);renderTransactions();pushNotification("Filtrando categoria: "+category);
-  }}});
-}
-
-/* ---------- Voz ---------- */
-function startVoiceInput(){
-  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!Recognition)return alert("O reconhecimento de voz não é compatível com este navegador. Você pode digitar o lançamento.");
-  const recognition=new Recognition();recognition.lang="pt-BR";
-  recognition.onstart=()=>pushNotification("🎤 Ouvindo. Diga, por exemplo: gastei 50 reais no mercado.");
-  recognition.onerror=()=>pushNotification("Não foi possível reconhecer a fala. Tente novamente.");
-  recognition.onresult=event=>{
-    const speech=event.results[0][0].transcript.trim();document.getElementById("t-desc").value=speech;
-    const match=speech.match(/(\d+(?:[.,]\d{1,2})?)/);if(match)document.getElementById("t-val").value=match[1].replace(",",".");
-    const lower=speech.toLowerCase(),income=/recebi|ganhei|salário|vendi|renda/.test(lower);
-    document.getElementById("t-tipo").value=income?"receita":"despesa";populateCategories();
-    pushNotification("Fala reconhecida. Confira descrição e valor antes de salvar.");
-  };
-  try{recognition.start();}catch(e){pushNotification("Não foi possível iniciar o microfone.");}
-}
-
-/* ---------- Backup e exportação ---------- */
-function downloadFile(content,type,filename){
-  const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-}
-function exportBackup(){
-  const backup={app:"GbFinance Mobile Pro",version:3,exportadoEm:new Date().toISOString(),transactions,agenda,wallets,goals};
-  downloadFile(JSON.stringify(backup,null,2),"application/json",`GbFinance_Backup_${todayLocal()}.json`);
-  pushNotification("Backup exportado.");
-}
-
-/*
- * IMPORTAÇÃO COMPATÍVEL:
- * 1. Backup padrão do GbFinance.
- * 2. Arquivo exportado por "Exportar chave" da recuperação.
- * 3. Arquivo exportado por "Exportar todas as chaves".
- * 4. JSONs com nomes alternativos para as listas.
- *
- * A importação mantém as categorias que não existirem no arquivo.
- * Antes de gravar, cria uma cópia preventiva do armazenamento atual.
- */
-function importBackup(event){
-  const input=event?.target;
-  const file=input?.files?.[0];
-  if(!file)return;
-
-  const reader=new FileReader();
-
-  reader.onload=()=>{
-    try{
-      let root;
-      try{
-        root=JSON.parse(String(reader.result??""));
-      }catch{
-        throw new Error("O arquivo não contém um JSON válido.");
-      }
-
-      const targetAliases={
-        transactions:["transactions","transacoes","transacao","movimentacoes","movimentacao","lancamentos","lancamento","gb_trans_mob","gbtransmob"],
-        agenda:["agenda","compromissos","agendamentos","contasagendadas","gb_agen_mob","gbagenmob"],
-        wallets:["wallets","wallet","carteiras","carteira","contas","gb_wall_mob","gbwallmob"],
-        goals:["goals","goal","metas","meta","gb_goals_mob","gbgoalsmob"]
-      };
-
-      const normalizeKey=value=>String(value??"")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g,"");
-
-      const aliasToTarget={};
-      Object.entries(targetAliases).forEach(([target,aliases])=>{
-        aliases.forEach(alias=>aliasToTarget[normalizeKey(alias)]=target);
-        aliasToTarget[normalizeKey(STORAGE_KEYS[target])]=target;
-      });
-
-      const candidates={};
-      const candidateSources={};
-      const addCandidate=(target,value,source)=>{
-        if(!target||!Array.isArray(value))return;
-        if(!Object.prototype.hasOwnProperty.call(candidates,target)){
-          candidates[target]=value;
-          candidateSources[target]=source||target;
-        }else if(candidates[target].length===0&&value.length>0){
-          candidates[target]=value;
-          candidateSources[target]=source||target;
-        }
-      };
-
-      function inferArrayTarget(array){
-        if(!Array.isArray(array))return null;
-        if(array.length===0)return null;
-
-        const items=array.filter(item=>item&&typeof item==="object"&&!Array.isArray(item));
-        if(!items.length)return null;
-
-        const transaction=items.some(item=>
-          item.tipo!==undefined&&item.valor!==undefined&&
-          (item.data!==undefined||item.desc!==undefined||item.descricao!==undefined)
-        );
-        if(transaction)return "transactions";
-
-        const agendaItem=items.some(item=>
-          item.venc!==undefined&&item.valor!==undefined&&
-          (item.status!==undefined||item.rec!==undefined||item.recorrencia!==undefined)
-        );
-        if(agendaItem)return "agenda";
-
-        const wallet=items.some(item=>
-          (item.name!==undefined||item.nome!==undefined)&&
-          (item.initial!==undefined||item.type!==undefined||item.tipoConta!==undefined||item.saldoInicial!==undefined)
-        );
-        if(wallet)return "wallets";
-
-        const goal=items.some(item=>
-          (item.name!==undefined||item.nome!==undefined)&&
-          (item.target!==undefined||item.alvo!==undefined||item.valorAlvo!==undefined)
-        );
-        if(goal)return "goals";
-
-        return null;
-      }
-
-      function parseMaybeJSON(value){
-        if(typeof value!=="string")return value;
-        try{return JSON.parse(value);}catch{return value;}
-      }
-
-      /*
-       * Reconhece a estrutura gerada por exportRecoveryEntry():
-       * { chave, valorBruto, valorInterpretado }
-       */
-      if(root&&typeof root==="object"&&!Array.isArray(root)){
-        const recoveredValue=root.valorInterpretado!==undefined
-          ?root.valorInterpretado
-          :root.valorBruto!==undefined
-            ?parseMaybeJSON(root.valorBruto)
-            :undefined;
-
-        if(Array.isArray(recoveredValue)){
-          const sourceKey=String(root.chave||"");
-          const target=aliasToTarget[normalizeKey(sourceKey)]||inferArrayTarget(recoveredValue);
-          if(target)addCandidate(target,recoveredValue,sourceKey||"valorInterpretado");
-        }
-      }
-
-      /*
-       * Reconhece a estrutura gerada por exportAllLocalStorage():
-       * { dados: { gb_trans_mob: { tipo, valor, valorBruto }, ... } }
-       */
-      if(root&&typeof root==="object"&&!Array.isArray(root)&&root.dados&&typeof root.dados==="object"){
-        Object.entries(root.dados).forEach(([key,entry])=>{
-          let value;
-
-          if(Array.isArray(entry)){
-            value=entry;
-          }else if(entry&&typeof entry==="object"){
-            if(Array.isArray(entry.valor))value=entry.valor;
-            else if(Array.isArray(entry.value))value=entry.value;
-            else if(entry.valor!==undefined)value=parseMaybeJSON(entry.valor);
-            else if(entry.valorBruto!==undefined)value=parseMaybeJSON(entry.valorBruto);
-            else if(entry.value!==undefined)value=parseMaybeJSON(entry.value);
-          }else{
-            value=parseMaybeJSON(entry);
-          }
-
-          if(!Array.isArray(value))return;
-          const target=aliasToTarget[normalizeKey(key)]||inferArrayTarget(value);
-          if(target)addCandidate(target,value,key);
-        });
-      }
-
-      /*
-       * Procura listas dentro do arquivo, inclusive em objetos aninhados.
-       * Limita a profundidade para evitar recursão excessiva em arquivos ruins.
-       */
-      const visited=new WeakSet();
-      function walk(value,depth,path){
-        if(depth>12||value===null||typeof value!=="object")return;
-        if(visited.has(value))return;
-        visited.add(value);
-
-        if(Array.isArray(value)){
-          const target=inferArrayTarget(value);
-          if(target)addCandidate(target,value,path);
-          return;
-        }
-
-        Object.entries(value).forEach(([key,child])=>{
-          const target=aliasToTarget[normalizeKey(key)];
-          if(target&&Array.isArray(child)){
-            addCandidate(target,child,path?`${path}.${key}`:key);
-          }else if(child&&typeof child==="object"){
-            walk(child,depth+1,path?`${path}.${key}`:key);
-          }else if(typeof child==="string"&&target){
-            const parsed=parseMaybeJSON(child);
-            if(Array.isArray(parsed))addCandidate(target,parsed,path?`${path}.${key}`:key);
-          }
-        });
-      }
-      walk(root,0,"arquivo");
-
-      if(!Object.keys(candidates).length){
-        throw new Error(
-          "Não encontrei listas reconhecíveis de transações, agenda, carteiras ou metas neste JSON. Use a ferramenta de recuperação para exportar a chave que contém os dados."
-        );
-      }
-
-      /*
-       * Converte nomes de campos conhecidos de versões antigas para o
-       * formato usado atualmente pelo GbFinance.
-       */
-      function normalizeRecords(target,array){
-        return array.map((original,index)=>{
-          if(!original||typeof original!=="object"||Array.isArray(original)){
-            throw new Error(`O item ${index+1} de ${target} não é um objeto válido.`);
-          }
-
-          const item={...original};
-
-          if(target==="transactions"){
-            item.id=item.id??item.codigo??item.uuid??`recuperado_trans_${Date.now()}_${index}`;
-            item.desc=String(item.desc??item.descricao??item.nome??item.titulo??"Lançamento recuperado");
-            item.valor=Number(item.valor??item.value??item.amount);
-            let tipo=normalizeKey(item.tipo??item.natureza??item.type??"");
-            if(["receita","entrada","credito","income","in"].includes(tipo))item.tipo="receita";
-            else if(["despesa","saida","debito","expense","out"].includes(tipo))item.tipo="despesa";
-            item.data=String(item.data??item.date??item.dataLancamento??"");
-            item.cat=String(item.cat??item.categoria??item.category??"📦 Outros");
-            item.subcat=String(item.subcat??item.subcategoria??item.subcategory??"");
-            item.tags=Array.isArray(item.tags)?item.tags:
-              typeof item.tags==="string"?item.tags.split(",").map(tag=>tag.trim()).filter(Boolean):[];
-            item.wallet=item.wallet??item.carteira??item.conta??item.walletId??"";
-          }
-
-          if(target==="agenda"){
-            item.id=item.id??item.codigo??`recuperado_agenda_${Date.now()}_${index}`;
-            item.desc=String(item.desc??item.descricao??item.nome??item.titulo??"Compromisso recuperado");
-            item.valor=Number(item.valor??item.value??item.amount);
-            let tipo=normalizeKey(item.tipo??item.natureza??item.type??"");
-            if(["receita","entrada","credito","income","areceber"].includes(tipo))item.tipo="receita";
-            else if(["despesa","saida","debito","expense","apagar"].includes(tipo))item.tipo="despesa";
-            item.venc=String(item.venc??item.vencimento??item.dataVencimento??item.dueDate??item.data??"");
-            item.status=String(item.status??"Pendente");
-            item.rec=String(item.rec??item.recorrencia??"unica");
-            item.paidDates=Array.isArray(item.paidDates)?item.paidDates:[];
-          }
-
-          if(target==="wallets"){
-            item.id=item.id??item.codigo??`recuperado_carteira_${Date.now()}_${index}`;
-            item.name=String(item.name??item.nome??item.descricao??"Carteira recuperada");
-            item.type=String(item.type??item.tipoConta??item.tipo??"Conta Corrente");
-            item.initial=Number(item.initial??item.saldoInicial??item.saldo_inicial??item.balance??item.saldo??0);
-          }
-
-          if(target==="goals"){
-            item.id=item.id??item.codigo??`recuperado_meta_${Date.now()}_${index}`;
-            item.name=String(item.name??item.nome??item.descricao??"Meta recuperada");
-            item.target=Number(item.target??item.alvo??item.valorAlvo??item.valor_alvo??item.valorMeta);
-            item.current=Number(item.current??item.guardado??item.saldoAtual??item.valorAtual??0);
-            item.deadline=String(item.deadline??item.prazo??item.dataLimite??"");
-          }
-
-          return item;
-        });
-      }
-
-      const normalized={};
-      Object.entries(candidates).forEach(([target,array])=>{
-        normalized[target]=normalizeRecords(target,array);
-      });
-
-      function validateArray(target,array){
-        if(!Array.isArray(array))return false;
-
-        if(target==="transactions"){
-          return array.every(item=>
-            item&&item.id!==undefined&&
-            ["receita","despesa"].includes(item.tipo)&&
-            Number.isFinite(Number(item.valor))&&
-            typeof item.data==="string"&&item.data.length>0
-          );
-        }
-
-        if(target==="agenda"){
-          return array.every(item=>
-            item&&item.id!==undefined&&
-            ["receita","despesa"].includes(item.tipo)&&
-            Number.isFinite(Number(item.valor))&&
-            typeof item.venc==="string"&&item.venc.length>0
-          );
-        }
-
-        if(target==="wallets"){
-          return array.every(item=>
-            item&&item.id!==undefined&&
-            typeof item.name==="string"&&item.name.length>0&&
-            Number.isFinite(Number(item.initial))
-          );
-        }
-
-        if(target==="goals"){
-          return array.every(item=>
-            item&&item.id!==undefined&&
-            typeof item.name==="string"&&item.name.length>0&&
-            Number.isFinite(Number(item.target))&&Number(item.target)>0&&
-            Number.isFinite(Number(item.current))
-          );
-        }
-
-        return false;
-      }
-
-      Object.entries(normalized).forEach(([target,array])=>{
-        if(!validateArray(target,array)){
-          throw new Error(
-            `A lista de ${target} foi identificada, mas contém registros incompletos ou incompatíveis. Nenhum dado foi importado.`
-          );
-        }
-      });
-
-      const labels={
-        transactions:"transações",
-        agenda:"compromissos da agenda",
-        wallets:"carteiras",
-        goals:"metas"
-      };
-
-      const summary=Object.entries(normalized)
-        .map(([target,array])=>`${array.length} ${labels[target]}`)
-        .join("\n");
-
-      const omitted=Object.keys(STORAGE_KEYS)
-        .filter(target=>!Object.prototype.hasOwnProperty.call(normalized,target));
-
-      const preservationNote=omitted.length
-        ?`\n\nEstas categorias não aparecem no arquivo e serão mantidas como estão:\n${omitted.map(target=>`• ${labels[target]}`).join("\n")}`
-        :"";
-
-      const confirmation=
-        "Os seguintes dados foram reconhecidos:\n\n"+
-        summary+
-        preservationNote+
-        "\n\nAntes da importação, o aplicativo tentará salvar uma cópia de segurança dos dados atuais. Deseja continuar?";
-
-      if(!confirm(confirmation))return;
-
-      /*
-       * Salva os valores brutos atuais para permitir uma restauração exata
-       * se alguma escrita falhar. Também mantém uma cópia preventiva em
-       * uma chave independente do localStorage.
-       */
-      const oldRaw={};
-      Object.values(STORAGE_KEYS).forEach(key=>{
-        oldRaw[key]=localStorage.getItem(key);
-      });
-
-      const safetyKey=`gbfinance_pre_import_backup_${Date.now()}`;
-      const safetyPayload={
-        app:"GbFinance Mobile Pro - Backup preventivo antes da importação",
-        criadoEm:new Date().toISOString(),
-        chavesOriginais:oldRaw
-      };
-
-      try{
-        localStorage.setItem(safetyKey,JSON.stringify(safetyPayload));
-      }catch(error){
-        console.error("Falha ao criar backup preventivo:",error);
-        throw new Error(
-          "Não foi possível criar uma cópia de segurança dos dados atuais. A importação foi cancelada para evitar perda de informações."
-        );
-      }
-
-      try{
-        Object.entries(normalized).forEach(([target,array])=>{
-          localStorage.setItem(STORAGE_KEYS[target],JSON.stringify(array));
-        });
-
-        /*
-         * Confere cada gravação antes de atualizar as variáveis em memória.
-         */
-        Object.entries(normalized).forEach(([target,array])=>{
-          const saved=localStorage.getItem(STORAGE_KEYS[target]);
-          if(saved===null)throw new Error(`A verificação da gravação de ${target} falhou.`);
-          const parsed=JSON.parse(saved);
-          if(!Array.isArray(parsed)||parsed.length!==array.length){
-            throw new Error(`A verificação da lista ${target} falhou.`);
-          }
-        });
-      }catch(writeError){
-        console.error("Falha durante a gravação:",writeError);
-
-        let rollbackFailed=false;
-        Object.entries(oldRaw).forEach(([key,raw])=>{
-          try{
-            if(raw===null)localStorage.removeItem(key);
-            else localStorage.setItem(key,raw);
-          }catch(rollbackError){
-            rollbackFailed=true;
-            console.error("Falha ao restaurar chave:",key,rollbackError);
-          }
-        });
-
-        throw new Error(
-          "A gravação da importação falhou. "+
-          (rollbackFailed
-            ?`O aplicativo tentou restaurar os valores anteriores, mas houve uma falha no processo. O backup preventivo está na chave ${safetyKey}.`
-            :"Os valores anteriores foram restaurados. Nenhuma importação foi concluída.")
-        );
-      }
-
-      /*
-       * Atualiza o estado somente depois de confirmar as gravações.
-       * Categorias ausentes no arquivo permanecem como estavam.
-       */
-      if(normalized.transactions)transactions=normalized.transactions;
-      if(normalized.agenda)agenda=normalized.agenda;
-      if(normalized.wallets)wallets=normalized.wallets;
-      if(normalized.goals)goals=normalized.goals;
-
-      populateSelectors();
-      resetTransactionForm();
-      renderApp();
-
-      if(typeof scanLocalStorage==="function")scanLocalStorage();
-
-      pushNotification("Importação concluída com sucesso.");
-      alert(
-        "Importação concluída!\n\n"+
-        summary+
-        "\n\nCópia preventiva criada na chave:\n"+
-        safetyKey+
-        "\n\nOs dados que não estavam no arquivo foram mantidos."
-      );
-
-    }catch(error){
-      console.error("Erro ao importar backup:",error);
-      alert(
-        "Não foi possível importar o arquivo.\n\n"+
-        (error?.message||"Erro desconhecido.")+
-        "\n\nNenhum dado deve ser apagado manualmente. Se continuar falhando, exporte o arquivo de recuperação e verifique sua estrutura."
-      );
-    }finally{
-      if(input)input.value="";
-    }
-  };
-
-  reader.onerror=()=>{
-    alert("Não foi possível ler o arquivo selecionado.");
-    if(input)input.value="";
-  };
-
-  reader.readAsText(file);
-}
-
-function csvEscape(value){
-  let s=String(value??"");if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';
-}
-function exportCSV(){
-  const rows=[["Data","Descrição","Tipo","Categoria","Subcategoria","Tags","Carteira","Valor"]];
-  transactions.forEach(t=>{
-    const wallet=wallets.find(w=>w.id===t.wallet);
-    rows.push([t.data,t.desc,t.tipo,t.cat,t.subcat,(t.tags||[]).join(", "),wallet?.name||"",Number(t.valor).toFixed(2)]);
-  });
-  const csv="\uFEFF"+rows.map(row=>row.map(csvEscape).join(";")).join("\r\n");
-  downloadFile(csv,"text/csv;charset=utf-8;",`GbFinance_Movimentacoes_${todayLocal()}.csv`);pushNotification("Arquivo CSV exportado.");
-}
-function resetAllData(){
-  const answer=prompt('Para apagar todos os dados locais, digite APAGAR');if(answer!=="APAGAR")return;
-  transactions=[];agenda=[];goals=[];wallets=[{id:"w1",name:"Conta Corrente",type:"Conta Corrente",initial:0},{id:"w2",name:"Dinheiro Físico",type:"Carteira Física",initial:0}];
-  if(saveAll()){populateSelectors();resetTransactionForm();renderApp();pushNotification("Dados locais apagados.");}
-}
-function checkReminders(){
-  const today=todayLocal(),pending=agenda.filter(a=>a.status==="Pendente"&&a.venc<=today);
-  if(pending.length)pushNotification(`Você tem ${pending.length} conta(s) vencendo hoje ou atrasada(s).`);
-}
-
-/* =========================================================
-   RECUPERAÇÃO DO LOCALSTORAGE
-   Busca de leitura: não altera as chaves durante a varredura.
-   ========================================================= */
-let recoveryEntries=[];
-let recoveryScanDone=false;
-let recoveryPreviewKey=null;
-
-function formatBytes(bytes){
-  if(!Number.isFinite(bytes)||bytes<=0)return "0 bytes";
-  if(bytes<1024)return bytes+" bytes";
-  if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" KB";
-  return (bytes/(1024*1024)).toFixed(2)+" MB";
-}
-function recoveryValueSize(value){
-  try{return new Blob([String(value)]).size;}catch{return String(value).length*2;}
-}
-function recoveryJsonForDisplay(entry){
-  if(entry.isJSON){
-    try{return JSON.stringify(entry.parsedValue,null,2);}catch{}
+function readArray(key, fallback = []) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || 'null');
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
   }
-  return String(entry.rawValue??"");
 }
-function scanLocalStorage(){
-  const status=document.getElementById("recovery-status"),results=document.getElementById("recovery-results");
-  recoveryEntries=[];results.replaceChildren();
-  try{
-    const keys=[];
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i);
-      if(key!==null)keys.push(key);
-    }
-    keys.forEach(key=>{
-      try{
-        const rawValue=localStorage.getItem(key);
-        if(rawValue===null)return;
-        let parsedValue=null,isJSON=false,parseError=false;
-        try{parsedValue=JSON.parse(rawValue);isJSON=true;}catch{parseError=true;}
-        recoveryEntries.push({key,rawValue,parsedValue,isJSON,parseError,bytes:recoveryValueSize(rawValue)});
-      }catch(error){
-        recoveryEntries.push({key,rawValue:"",parsedValue:null,isJSON:false,parseError:true,bytes:0,readError:String(error)});
-      }
-    });
-    recoveryScanDone=true;
-    renderRecoveryResults();
-    status.textContent=recoveryEntries.length
-      ?`Busca concluída: ${recoveryEntries.length} chave(s) encontrada(s) nesta origem.`
-      :"Nenhuma chave foi encontrada no localStorage desta origem.";
-    pushNotification("Busca do armazenamento concluída.");
-  }catch(error){
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE.transactions,JSON.stringify(transactions));
+    localStorage.setItem(STORAGE.agenda,JSON.stringify(agenda));
+    localStorage.setItem(STORAGE.wallets,JSON.stringify(wallets));
+    return true;
+  } catch (error) {
+    notify('Não foi possível salvar os dados. Verifique o espaço disponível no aparelho.');
     console.error(error);
-    status.textContent="Não foi possível acessar o localStorage. Verifique as permissões e a origem do aplicativo.";
-    alert("Falha ao acessar o localStorage: "+String(error.message||error));
+    return false;
   }
 }
-function filterRecoveryResults(){
-  if(recoveryScanDone)renderRecoveryResults();
-}
-function recoveryType(entry){
-  if(entry.readError)return "Erro de leitura";
-  if(!entry.isJSON)return "Texto ou dado não JSON";
-  if(Array.isArray(entry.parsedValue))return `Lista · ${entry.parsedValue.length} registro(s)`;
-  if(entry.parsedValue===null)return "JSON nulo";
-  if(typeof entry.parsedValue==="object")return "Objeto JSON";
-  return `JSON · ${typeof entry.parsedValue}`;
-}
-function detectRecoveryTarget(entry){
-  if(!entry.isJSON||!Array.isArray(entry.parsedValue))return null;
-  const arr=entry.parsedValue;
-  if(!arr.length)return null;
-  const sample=arr.find(x=>x&&typeof x==="object");
-  if(!sample)return null;
 
-  const transactionShape=arr.some(x=>x&&typeof x==="object"&&x.tipo&&x.valor!==undefined&&(x.data!==undefined||x.desc!==undefined));
-  const agendaShape=arr.some(x=>x&&typeof x==="object"&&x.venc!==undefined&&x.valor!==undefined&&(x.status!==undefined||x.rec!==undefined));
-  const walletShape=arr.some(x=>x&&typeof x==="object"&&typeof x.name==="string"&&(x.initial!==undefined||x.type!==undefined));
-  const goalShape=arr.some(x=>x&&typeof x==="object"&&typeof x.name==="string"&&x.target!==undefined&&(x.current!==undefined||x.deadline!==undefined));
+function normalizeTransaction(item) {
+  if (!item || typeof item !== 'object') return null;
 
-  const known=Object.entries(STORAGE_KEYS).find(([,key])=>key===entry.key);
-  if(known)return {name:known[0],key:known[1],label:{transactions:"transações",agenda:"agenda",wallets:"carteiras",goals:"metas"}[known[0]]};
-  if(transactionShape)return {name:"transactions",key:STORAGE_KEYS.transactions,label:"transações"};
-  if(agendaShape)return {name:"agenda",key:STORAGE_KEYS.agenda,label:"agenda"};
-  if(walletShape)return {name:"wallets",key:STORAGE_KEYS.wallets,label:"carteiras"};
-  if(goalShape)return {name:"goals",key:STORAGE_KEYS.goals,label:"metas"};
-  return null;
-}
-function renderRecoveryResults(){
-  const results=document.getElementById("recovery-results");
-  const query=(document.getElementById("recovery-search").value||"").trim().toLowerCase();
-  const totalBytes=recoveryEntries.reduce((sum,e)=>sum+(e.bytes||0),0);
-  document.getElementById("recovery-key-count").textContent=String(recoveryEntries.length);
-  document.getElementById("recovery-size").textContent=formatBytes(totalBytes);
-  results.replaceChildren();
+  const type = ['income','expense','transfer'].includes(item.type)
+    ? item.type
+    : 'expense';
 
-  const filtered=recoveryEntries.filter(entry=>{
-    if(!query)return true;
-    const searchable=[entry.key,entry.rawValue,recoveryType(entry)].join(" ").toLowerCase();
-    return searchable.includes(query);
-  });
-  if(!recoveryScanDone)return showEmpty(results,"Faça uma busca para listar os dados.");
-  if(!filtered.length)return showEmpty(results,"Nenhuma chave corresponde à sua pesquisa.");
+  const amount = safeNumber(item.amount);
+  if (!Number.isFinite(amount) || amount <= 0) return null;
 
-  filtered.forEach(entry=>{
-    const card=document.createElement("div");
-    card.className="recovery-item";
-
-    const head=document.createElement("div");
-    const key=document.createElement("div");
-    key.className="recovery-key";
-    key.textContent=entry.key;
-    const meta=document.createElement("div");
-    meta.className="recovery-meta";
-    meta.textContent=`${recoveryType(entry)} · ${formatBytes(entry.bytes)}${entry.readError?" · "+entry.readError:""}`;
-    head.append(key,meta);
-
-    const actions=document.createElement("div");
-    actions.className="recovery-actions";
-
-    const view=document.createElement("button");
-    view.className="btn-small btn-neutral";
-    view.textContent="👁️ Visualizar";
-    view.onclick=()=>viewRecoveryEntry(entry.key);
-
-    const exportOne=document.createElement("button");
-    exportOne.className="btn-small btn-neutral";
-    exportOne.textContent="📥 Exportar";
-    exportOne.onclick=()=>exportRecoveryEntry(entry.key);
-
-    actions.append(view,exportOne);
-
-    const target=detectRecoveryTarget(entry);
-    if(target){
-      const restore=document.createElement("button");
-      restore.className="btn-small btn-green";
-      restore.textContent="♻️ Restaurar "+target.label;
-      restore.onclick=()=>restoreRecoveryEntry(entry.key);
-      actions.appendChild(restore);
-    }
-    card.append(head,actions);
-    results.appendChild(card);
-  });
-}
-function findRecoveryEntry(key){
-  return recoveryEntries.find(entry=>entry.key===key)||null;
-}
-function viewRecoveryEntry(key){
-  const entry=findRecoveryEntry(key);
-  if(!entry)return alert("Esta chave não está mais na lista. Faça uma nova busca.");
-  recoveryPreviewKey=key;
-  document.getElementById("recovery-preview-title").textContent="Conteúdo: "+key;
-  document.getElementById("recovery-preview").value=recoveryJsonForDisplay(entry);
-  document.getElementById("recovery-preview-area").hidden=false;
-  document.getElementById("recovery-preview-area").scrollIntoView({behavior:"smooth",block:"start"});
-}
-function closeRecoveryPreview(){
-  document.getElementById("recovery-preview-area").hidden=true;
-  recoveryPreviewKey=null;
-}
-async function copyRecoveryPreview(){
-  const value=document.getElementById("recovery-preview").value;
-  try{
-    if(navigator.clipboard&&window.isSecureContext){
-      await navigator.clipboard.writeText(value);
-    }else{
-      const area=document.getElementById("recovery-preview");
-      area.focus();area.select();
-      if(!document.execCommand("copy"))throw new Error("Cópia indisponível");
-    }
-    pushNotification("Conteúdo copiado.");
-  }catch(error){
-    alert("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
-  }
-}
-function exportRecoveryEntry(key){
-  const entry=findRecoveryEntry(key);
-  if(!entry)return alert("Chave não encontrada. Faça uma nova busca.");
-  const data={
-    app:"GbFinance Mobile Pro - Recuperação",
-    exportadoEm:new Date().toISOString(),
-    chave:entry.key,
-    valorBruto:entry.rawValue,
-    valorInterpretado:entry.isJSON?entry.parsedValue:undefined
+  return {
+    id:String(item.id || uid('tx')),
+    type,
+    description:String(item.description || 'Movimentação').slice(0,120),
+    amount:Math.round(amount*100)/100,
+    category:String(item.category || (type === 'income' ? 'Outros' : type === 'transfer' ? 'Transferência' : 'Outros')).slice(0,80),
+    walletId:String(item.walletId || ''),
+    destinationWalletId:String(item.destinationWalletId || ''),
+    date:/^\d{4}-\d{2}-\d{2}$/.test(item.date || '') ? item.date : localDate(),
+    tags:String(item.tags || '').slice(0,160),
+    notes:String(item.notes || '').slice(0,500),
+    transferId:item.transferId ? String(item.transferId) : '',
+    agendaId:item.agendaId ? String(item.agendaId) : '',
+    installment:item.installment ? safeNumber(item.installment) : 0,
+    createdAt:item.createdAt || new Date().toISOString()
   };
-  downloadFile(JSON.stringify(data,null,2),"application/json",`GbFinance_Recuperacao_${safeFilename(key)}_${todayLocal()}.json`);
-  pushNotification("Chave exportada para um arquivo JSON.");
 }
-function safeFilename(value){
-  return String(value).replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,70)||"dados";
+
+function normalizeAgenda(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const amount = safeNumber(item.amount);
+  if (amount <= 0) return null;
+
+  return {
+    id:String(item.id || uid('ag')),
+    type:item.type === 'income' ? 'income' : 'expense',
+    description:String(item.description || 'Compromisso').slice(0,120),
+    amount:Math.round(amount*100)/100,
+    category:String(item.category || 'Outros').slice(0,80),
+    walletId:String(item.walletId || ''),
+    date:/^\d{4}-\d{2}-\d{2}$/.test(item.date || '') ? item.date : localDate(),
+    notes:String(item.notes || '').slice(0,500),
+    frequency:item.frequency === 'monthly' ? 'monthly' : 'once',
+    installments:Math.max(1,Math.min(24,Math.floor(safeNumber(item.installments) || 1))),
+    currentInstallment:Math.max(1,Math.floor(safeNumber(item.currentInstallment) || 1)),
+    cycle:Math.max(0,Math.floor(safeNumber(item.cycle) || 0)),
+    createdAt:item.createdAt || new Date().toISOString()
+  };
 }
-function exportAllLocalStorage(){
-  try{
-    const all={};
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i);
-      if(key===null)continue;
-      const value=localStorage.getItem(key);
-      if(value===null)continue;
-      try{all[key]={tipo:"JSON",valor:JSON.parse(value),valorBruto:value};}
-      catch{all[key]={tipo:"texto",valorBruto:value};}
+
+function normalizeWallet(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const validTypes = ['checking','cash','savings','digital','other'];
+
+  return {
+    id:String(item.id || uid('wallet')),
+    name:String(item.name || 'Conta').slice(0,60),
+    type:validTypes.includes(item.type) ? item.type : 'other',
+    opening:Math.round(safeNumber(item.opening)*100)/100,
+    createdAt:item.createdAt || new Date().toISOString()
+  };
+}
+
+function loadData() {
+  transactions = readArray(STORAGE.transactions)
+    .map(normalizeTransaction).filter(Boolean);
+
+  agenda = readArray(STORAGE.agenda)
+    .map(normalizeAgenda).filter(Boolean);
+
+  wallets = readArray(STORAGE.wallets)
+    .map(normalizeWallet).filter(Boolean);
+
+  if (!wallets.length) wallets = DEFAULT_WALLETS.map(item => ({...item}));
+
+  // Compatibilidade com registros antigos e contas removidas.
+  transactions.forEach(transaction => {
+    if (!wallets.some(wallet => wallet.id === transaction.walletId)) {
+      if (transaction.walletId) {
+        wallets.push({
+          id:transaction.walletId,
+          name:'Conta importada',
+          type:'other',
+          opening:0,
+          createdAt:new Date().toISOString()
+        });
+      } else {
+        transaction.walletId = wallets[0].id;
+      }
     }
-    const backup={
-      app:"GbFinance Mobile Pro - Exportação completa do localStorage",
-      exportadoEm:new Date().toISOString(),
-      origem:"localStorage acessível nesta origem",
-      quantidadeChaves:Object.keys(all).length,
-      dados:all
-    };
-    downloadFile(JSON.stringify(backup,null,2),"application/json",`GbFinance_LocalStorage_Completo_${todayLocal()}.json`);
-    pushNotification("Exportação do localStorage iniciada.");
-  }catch(error){
-    console.error(error);
-    alert("Não foi possível exportar todas as chaves: "+String(error.message||error));
-  }
+
+    if (transaction.type === 'transfer' &&
+        transaction.destinationWalletId &&
+        !wallets.some(wallet => wallet.id === transaction.destinationWalletId)) {
+      wallets.push({
+        id:transaction.destinationWalletId,
+        name:'Conta importada',
+        type:'other',
+        opening:0,
+        createdAt:new Date().toISOString()
+      });
+    }
+  });
+
+  agenda.forEach(item => {
+    if (!wallets.some(wallet => wallet.id === item.walletId)) {
+      item.walletId = wallets[0].id;
+    }
+  });
+
+  persist();
 }
-function validateRecoveryArray(target,array){
-  if(!Array.isArray(array))return false;
-  if(target==="transactions"){
-    return array.every(t=>t&&t.id!==undefined&&["receita","despesa"].includes(t.tipo)&&Number.isFinite(Number(t.valor))&&typeof t.data==="string");
-  }
-  if(target==="agenda"){
-    return array.every(a=>a&&a.id!==undefined&&["receita","despesa"].includes(a.tipo)&&Number.isFinite(Number(a.valor))&&typeof a.venc==="string");
-  }
-  if(target==="wallets"){
-    return array.every(w=>w&&w.id!==undefined&&typeof w.name==="string"&&Number.isFinite(Number(w.initial)));
-  }
-  if(target==="goals"){
-    return array.every(g=>g&&g.id!==undefined&&typeof g.name==="string"&&Number.isFinite(Number(g.target)));
-  }
-  return false;
+
+function walletById(id) {
+  return wallets.find(wallet => wallet.id === id);
 }
-function restoreRecoveryEntry(sourceKey){
-  const entry=findRecoveryEntry(sourceKey);
-  if(!entry)return alert("Chave não encontrada. Faça uma nova busca.");
-  const target=detectRecoveryTarget(entry);
-  if(!target)return alert("Não foi possível reconhecer com segurança o tipo desses dados. Exporte o conteúdo para análise manual.");
-  if(!validateRecoveryArray(target.name,entry.parsedValue)){
-    return alert("O conteúdo não passou na validação necessária para restauração. Nenhum dado foi alterado.");
-  }
 
-  const targetKey=target.key;
-  let currentRaw;
-  try{currentRaw=localStorage.getItem(targetKey);}
-  catch{return alert("Não foi possível ler a chave de destino. Nenhum dado foi alterado.");}
+function walletName(id) {
+  return walletById(id)?.name || 'Conta não identificada';
+}
 
-  const currentExists=currentRaw!==null;
-  const sourceIsDestination=sourceKey===targetKey;
-  if(sourceIsDestination){
-    alert("Esta chave já é a chave principal de "+target.label+". A busca encontrou os dados existentes, portanto não é necessário copiá-los para o mesmo local.");
-    return;
-  }
-  const count=entry.parsedValue.length;
-  const confirmation=`Foram reconhecidos ${count} registro(s) de ${target.label} na chave "${sourceKey}".\n\nDestino: ${targetKey}.\n\n${currentExists?"A chave de destino já contém dados. Eles serão copiados para uma chave de segurança antes da restauração.":"A chave de destino está vazia."}\n\nDeseja continuar?`;
-  if(!confirm(confirmation))return;
+function walletBalance(walletId) {
+  const wallet = walletById(walletId);
+  if (!wallet) return 0;
 
-  let safetyKey=null;
-  if(currentExists){
-    safetyKey=`gb_recovery_safety_${Date.now()}`;
-    try{
-      localStorage.setItem(safetyKey,JSON.stringify({
-        tipo:"GbFinance Recovery Safety Backup",
-        criadoEm:new Date().toISOString(),
-        chaveOriginal:targetKey,
-        valorOriginalBruto:currentRaw
-      }));
-    }catch(error){
-      console.error(error);
-      alert("Não foi possível criar o backup preventivo. A restauração foi cancelada para proteger os dados atuais.");
+  let total = safeNumber(wallet.opening);
+
+  transactions.forEach(transaction => {
+    if (transaction.type === 'transfer') {
+      if (transaction.walletId === walletId) total -= transaction.amount;
+      if (transaction.destinationWalletId === walletId) total += transaction.amount;
       return;
     }
+
+    if (transaction.walletId !== walletId) return;
+
+    if (transaction.type === 'income') total += transaction.amount;
+    else total -= transaction.amount;
+  });
+
+  return Math.round(total*100)/100;
+}
+
+function allBalances() {
+  return wallets.reduce((total,wallet) => total + walletBalance(wallet.id),0);
+}
+
+function getMonthTransactions(month = currentMonth()) {
+  return transactions.filter(transaction => monthKey(transaction.date) === month);
+}
+
+function monthTotals(month = currentMonth()) {
+  const records = getMonthTransactions(month).filter(item => item.type !== 'transfer');
+
+  const income = records
+    .filter(item => item.type === 'income')
+    .reduce((total,item) => total + item.amount,0);
+
+  const expense = records
+    .filter(item => item.type === 'expense')
+    .reduce((total,item) => total + item.amount,0);
+
+  return {
+    income:Math.round(income*100)/100,
+    expense:Math.round(expense*100)/100,
+    result:Math.round((income-expense)*100)/100
+  };
+}
+
+function notify(message, timeout = 3500) {
+  const container = $('notification-center');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+
+  const text = document.createElement('span');
+  text.textContent = String(message);
+
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.textContent = '✕';
+  close.setAttribute('aria-label','Fechar notificação');
+  close.onclick = () => toast.remove();
+
+  toast.append(close,text);
+  container.append(toast);
+
+  window.setTimeout(() => toast.remove(),timeout);
+}
+
+function navigate(view) {
+  const target = $('view-' + view);
+  if (!target) return;
+
+  document.querySelectorAll('.view').forEach(section => {
+    section.classList.toggle('active',section === target);
+  });
+
+  document.querySelectorAll('.nav-item').forEach(button => {
+    button.classList.toggle('active',button.dataset.view === view);
+  });
+
+  if (view === 'home') renderDashboard();
+  if (view === 'launch') renderLaunch();
+  if (view === 'wallets') renderWallets();
+  if (view === 'reports') renderReport();
+  if (view === 'settings') renderSettings();
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setLaunchMode(mode) {
+  currentLaunchMode = mode === 'agenda' ? 'agenda' : 'transaction';
+
+  $('transaction-form-wrap').classList.toggle('hidden',currentLaunchMode !== 'transaction');
+  $('agenda-form-wrap').classList.toggle('hidden',currentLaunchMode !== 'agenda');
+
+  $('mode-transaction').classList.toggle('active',currentLaunchMode === 'transaction');
+  $('mode-agenda').classList.toggle('active',currentLaunchMode === 'agenda');
+
+  if (currentLaunchMode === 'agenda') renderAgenda();
+}
+
+function fillSelect(selectId,items,selectedValue = '') {
+  const select = $(selectId);
+  if (!select) return;
+
+  const previous = selectedValue || select.value;
+
+  select.replaceChildren();
+
+  items.forEach(item => {
+    const option = document.createElement('option');
+    option.value = String(item.value);
+    option.textContent = String(item.label);
+    select.append(option);
+  });
+
+  if (items.some(item => String(item.value) === String(previous))) {
+    select.value = String(previous);
+  }
+}
+
+function populateWalletSelects() {
+  const walletOptions = wallets.map(wallet => ({
+    value:wallet.id,
+    label:wallet.name
+  }));
+
+  ['transaction-wallet','agenda-wallet','transfer-from','transfer-to'].forEach(id => {
+    fillSelect(id,walletOptions);
+  });
+
+  const filterOptions = [
+    {value:'all',label:'Todas as contas'},
+    ...walletOptions
+  ];
+
+  fillSelect('filter-wallet',filterOptions);
+  fillSelect('report-wallet',[
+    {value:'all',label:'Todas as contas'},
+    ...walletOptions
+  ]);
+
+  const destination = $('transaction-destination');
+  if (destination) {
+    fillSelect('transaction-destination',walletOptions);
+  }
+}
+
+function populateCategories() {
+  const incomeOptions = CATEGORIES.income.map(category => ({
+    value:category,label:category
+  }));
+
+  const expenseOptions = CATEGORIES.expense.map(category => ({
+    value:category,label:category
+  }));
+
+  function updateCategorySelect(selectId,type) {
+    const select = $(selectId);
+    if (!select) return;
+
+    const current = select.value;
+    const categories = type === 'income' ? incomeOptions : expenseOptions;
+
+    fillSelect(selectId,categories,current);
   }
 
-  try{
-    localStorage.setItem(targetKey,JSON.stringify(entry.parsedValue));
-    const readBack=localStorage.getItem(targetKey);
-    if(readBack===null||JSON.stringify(JSON.parse(readBack))!==JSON.stringify(entry.parsedValue)){
-      throw new Error("A verificação dos dados restaurados falhou.");
+  updateCategorySelect('transaction-category',$('transaction-type').value);
+  updateCategorySelect('agenda-category',$('agenda-type').value);
+}
+
+function renderApp() {
+  $('today-label').textContent = new Date().toLocaleDateString('pt-BR',{
+    weekday:'long',day:'numeric',month:'long',year:'numeric'
+  });
+
+  populateWalletSelects();
+  populateCategories();
+  renderDashboard();
+  renderLaunch();
+  renderWallets();
+  renderReport();
+  renderSettings();
+}
+
+function renderAll() {
+  persist();
+  renderApp();
+}
+</script>
+<script>
+function renderDashboard() {
+  const totals = monthTotals();
+
+  $('metric-balance').textContent = money(allBalances());
+  $('metric-income').textContent = money(totals.income);
+  $('metric-expense').textContent = money(totals.expense);
+
+  const savingRate = totals.income > 0
+    ? (totals.result / totals.income) * 100
+    : 0;
+
+  $('metric-saving').textContent = savingRate.toLocaleString('pt-BR',{
+    maximumFractionDigits:1
+  }) + '%';
+
+  const insight = generateInsight();
+  $('assistant-insight').textContent = insight;
+  $('settings-insight').textContent = insight;
+
+  renderCharts();
+  renderUpcoming();
+  renderRecent();
+}
+
+function generateInsight() {
+  const totals = monthTotals();
+  const expenses = transactions.filter(item =>
+    item.type === 'expense' && monthKey(item.date) === currentMonth()
+  );
+
+  if (!transactions.length) {
+    return 'Comece registrando suas receitas e despesas. Com esses dados, você poderá acompanhar seu saldo e descobrir onde seu dinheiro está sendo gasto.';
+  }
+
+  if (totals.income === 0 && totals.expense > 0) {
+    return `Você já registrou ${money(totals.expense)} em despesas neste mês, mas ainda não há receitas registradas para o período. Confira se seus lançamentos estão completos.`;
+  }
+
+  if (totals.result < 0) {
+    return `Atenção: suas despesas superam as receitas em ${money(Math.abs(totals.result))} neste mês. Revise os gastos e priorize os compromissos essenciais.`;
+  }
+
+  if (totals.income > 0 && totals.result >= 0) {
+    const rate = (totals.result / totals.income) * 100;
+    const largest = expenses.reduce((best,item) =>
+      !best || item.amount > best.amount ? item : best, null
+    );
+
+    let message = `Seu resultado mensal está positivo em ${money(totals.result)}. Você está mantendo ${rate.toLocaleString('pt-BR',{maximumFractionDigits:1})}% das receitas após as despesas registradas.`;
+
+    if (largest) {
+      message += ` Sua maior despesa individual é "${largest.description}", no valor de ${money(largest.amount)}.`;
     }
-  }catch(error){
-    console.error(error);
-    try{
-      if(currentExists&&safetyKey){
-        const backup=JSON.parse(localStorage.getItem(safetyKey));
-        localStorage.setItem(targetKey,backup.valorOriginalBruto);
-      }else if(!currentExists){
-        localStorage.removeItem(targetKey);
+
+    return message;
+  }
+
+  return 'Continue registrando suas movimentações para acompanhar a evolução das suas finanças.';
+}
+
+function refreshAssistant() {
+  $('assistant-insight').textContent = generateInsight();
+  $('settings-insight').textContent = generateInsight();
+  notify('Análise financeira atualizada.');
+}
+
+function renderCharts() {
+  if (typeof Chart === 'undefined') return;
+
+  const balanceCanvas = $('balance-chart');
+  const categoryCanvas = $('category-chart');
+
+  if (!balanceCanvas || !categoryCanvas) return;
+
+  const months = [];
+
+  for (let offset = 5; offset >= 0; offset--) {
+    const date = dateFromString(localDate());
+    date.setDate(1);
+    date.setMonth(date.getMonth() - offset);
+
+    const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+    const label = date.toLocaleDateString('pt-BR',{month:'short'});
+    const totals = monthTotals(key);
+
+    months.push({
+      key,
+      label:label.replace('.',''),
+      income:totals.income,
+      expense:totals.expense,
+      result:totals.result
+    });
+  }
+
+  if (balanceChart) balanceChart.destroy();
+
+  balanceChart = new Chart(balanceCanvas,{
+    type:'line',
+    data:{
+      labels:months.map(item => item.label),
+      datasets:[
+        {
+          label:'Receitas',
+          data:months.map(item => item.income),
+          borderColor:'#34d399',
+          backgroundColor:'rgba(52,211,153,.10)',
+          fill:true,
+          tension:.35
+        },
+        {
+          label:'Despesas',
+          data:months.map(item => item.expense),
+          borderColor:'#fb7185',
+          backgroundColor:'rgba(251,113,133,.08)',
+          fill:true,
+          tension:.35
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{
+          labels:{color:getComputedStyle(document.body).getPropertyValue('--muted')}
+        }
+      },
+      scales:{
+        x:{
+          ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},
+          grid:{display:false}
+        },
+        y:{
+          beginAtZero:true,
+          ticks:{
+            color:getComputedStyle(document.body).getPropertyValue('--muted'),
+            callback:value => 'R$ ' + Number(value).toLocaleString('pt-BR')
+          },
+          grid:{color:'rgba(148,163,184,.10)'}
+        }
       }
-    }catch(rollbackError){
-      console.error("Falha ao restaurar o estado anterior:",rollbackError);
     }
-    alert("A restauração falhou. Foi feita uma tentativa de preservar ou recuperar o valor anterior. Verifique o armazenamento antes de continuar.");
+  });
+
+  const categoryTotals = {};
+
+  getMonthTransactions().filter(item => item.type === 'expense')
+    .forEach(item => {
+      categoryTotals[item.category] =
+        (categoryTotals[item.category] || 0) + item.amount;
+    });
+
+  const categories = Object.entries(categoryTotals)
+    .sort((a,b) => b[1]-a[1]);
+
+  if (categoryChart) categoryChart.destroy();
+
+  categoryChart = new Chart(categoryCanvas,{
+    type:'doughnut',
+    data:{
+      labels:categories.length ? categories.map(item => item[0]) : ['Sem despesas'],
+      datasets:[{
+        data:categories.length ? categories.map(item => item[1]) : [1],
+        backgroundColor:[
+          '#818cf8','#34d399','#fb7185','#fbbf24',
+          '#60a5fa','#c084fc','#2dd4bf','#f97316',
+          '#a3e635','#e879f9'
+        ],
+        borderWidth:0,
+        hoverOffset:5
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      cutout:'65%',
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{
+            color:getComputedStyle(document.body).getPropertyValue('--muted'),
+            boxWidth:10,
+            padding:12
+          }
+        },
+        tooltip:{
+          callbacks:{
+            label:context => `${context.label}: ${money(context.raw)}`
+          }
+        }
+      },
+      onClick:(event,elements,chart) => {
+        if (!elements.length || !categories.length) return;
+
+        const selected = categories[elements[0].index];
+        if (!selected) return;
+
+        navigate('launch');
+        $('filter-search').value = selected[0];
+        $('filter-month').value = currentMonth();
+        $('filter-type').value = 'expense';
+        $('filter-wallet').value = 'all';
+        renderTransactions();
+      }
+    }
+  });
+}
+
+function transactionIcon(type) {
+  if (type === 'income') return '↙';
+  if (type === 'transfer') return '⇄';
+  return '↗';
+}
+
+function transactionTypeLabel(type) {
+  if (type === 'income') return 'Receita';
+  if (type === 'transfer') return 'Transferência';
+  return 'Despesa';
+}
+
+function transactionAmountText(item) {
+  if (item.type === 'income') return '+ ' + money(item.amount);
+  if (item.type === 'transfer') return money(item.amount);
+  return '− ' + money(item.amount);
+}
+
+function transactionWalletDescription(item) {
+  if (item.type === 'transfer') {
+    return `${walletName(item.walletId)} → ${walletName(item.destinationWalletId)}`;
+  }
+  return walletName(item.walletId);
+}
+
+function transactionCard(item, options = {}) {
+  const colorClass = item.type === 'income'
+    ? 'positive'
+    : item.type === 'expense'
+      ? 'negative'
+      : '';
+
+  const category = item.type === 'transfer'
+    ? 'Transferência entre contas'
+    : item.category;
+
+  return `
+    <div class="item">
+      <div class="item-main">
+        <strong>${escapeHTML(transactionIcon(item.type))} ${escapeHTML(item.description)}</strong>
+        <p>${escapeHTML(formatDate(item.date))} · ${escapeHTML(category)}</p>
+        <p>${escapeHTML(transactionWalletDescription(item))}</p>
+        ${item.tags ? `<p>Tags: ${escapeHTML(item.tags)}</p>` : ''}
+      </div>
+      <div class="item-right">
+        <span class="amount ${colorClass}">${escapeHTML(transactionAmountText(item))}</span>
+        <span class="badge">${escapeHTML(transactionTypeLabel(item.type))}</span>
+        ${options.actions ? `
+          <div class="btn-row">
+            <button class="btn secondary small" onclick="editTransaction('${escapeHTML(item.id)}')">Editar</button>
+            <button class="btn danger small" onclick="deleteTransaction('${escapeHTML(item.id)}')">Excluir</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderRecent() {
+  const recent = [...transactions]
+    .sort((a,b) => {
+      const dateOrder = String(b.date).localeCompare(String(a.date));
+      if (dateOrder !== 0) return dateOrder;
+      return String(b.createdAt).localeCompare(String(a.createdAt));
+    })
+    .slice(0,5);
+
+  $('recent-list').innerHTML = recent.length
+    ? recent.map(item => transactionCard(item)).join('')
+    : '<div class="empty">Nenhuma movimentação registrada ainda.</div>';
+}
+
+function renderTransactions() {
+  const search = ($('filter-search').value || '').trim().toLocaleLowerCase('pt-BR');
+  const month = $('filter-month').value;
+  const type = $('filter-type').value;
+  const wallet = $('filter-wallet').value;
+
+  let filtered = [...transactions];
+
+  if (search) {
+    filtered = filtered.filter(item => {
+      const searchable = [
+        item.description,
+        item.category,
+        item.tags,
+        item.notes,
+        transactionWalletDescription(item)
+      ].join(' ').toLocaleLowerCase('pt-BR');
+
+      return searchable.includes(search);
+    });
+  }
+
+  if (month) {
+    filtered = filtered.filter(item => monthKey(item.date) === month);
+  }
+
+  if (type !== 'all') {
+    filtered = filtered.filter(item => item.type === type);
+  }
+
+  if (wallet !== 'all') {
+    filtered = filtered.filter(item =>
+      item.walletId === wallet ||
+      (item.type === 'transfer' && item.destinationWalletId === wallet)
+    );
+  }
+
+  filtered.sort((a,b) => {
+    const dateOrder = String(b.date).localeCompare(String(a.date));
+    if (dateOrder !== 0) return dateOrder;
+    return String(b.createdAt).localeCompare(String(a.createdAt));
+  });
+
+  $('transaction-list').innerHTML = filtered.length
+    ? filtered.map(item => transactionCard(item,{actions:true})).join('')
+    : '<div class="empty">Nenhuma movimentação encontrada com esses filtros.</div>';
+
+  $('transaction-count').textContent =
+    `${filtered.length} movimentação(ões) encontrada(s).`;
+}
+
+function renderLaunch() {
+  populateWalletSelects();
+  populateCategories();
+  renderTransactions();
+  renderAgenda();
+  updateInstallmentPreview();
+}
+
+function resetTransactionForm() {
+  $('transaction-form').reset();
+  $('transaction-id').value = '';
+  $('transaction-date').value = localDate();
+  $('transaction-type').value = 'expense';
+  $('transaction-submit').textContent = 'Salvar movimentação';
+  $('transaction-cancel').classList.add('hidden');
+  $('transaction-destination-wrap').classList.add('hidden');
+
+  populateCategories();
+  populateWalletSelects();
+}
+
+function editTransaction(id) {
+  const item = transactions.find(transaction => transaction.id === id);
+  if (!item) return notify('Movimentação não encontrada.');
+
+  navigate('launch');
+  setLaunchMode('transaction');
+
+  $('transaction-id').value = item.id;
+  $('transaction-type').value = item.type;
+  $('transaction-date').value = item.date;
+  $('transaction-description').value = item.description;
+  $('transaction-amount').value = item.amount;
+  $('transaction-tags').value = item.tags;
+  $('transaction-notes').value = item.notes;
+
+  populateCategories();
+  $('transaction-category').value = item.category;
+  $('transaction-wallet').value = item.walletId;
+
+  $('transaction-destination-wrap').classList.toggle('hidden',item.type !== 'transfer');
+
+  if (item.destinationWalletId) {
+    $('transaction-destination').value = item.destinationWalletId;
+  }
+
+  $('transaction-submit').textContent = 'Salvar alterações';
+  $('transaction-cancel').classList.remove('hidden');
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteTransaction(id) {
+  const item = transactions.find(transaction => transaction.id === id);
+  if (!item) return;
+
+  if (!confirm(`Excluir a movimentação "${item.description}"?`)) return;
+
+  if (item.type === 'transfer' && item.transferId) {
+    transactions = transactions.filter(transaction =>
+      transaction.transferId !== item.transferId
+    );
+  } else {
+    transactions = transactions.filter(transaction => transaction.id !== id);
+  }
+
+  persist();
+  renderApp();
+  notify('Movimentação excluída.');
+}
+
+$('transaction-type').addEventListener('change',() => {
+  const type = $('transaction-type').value;
+
+  $('transaction-destination-wrap').classList.toggle('hidden',type !== 'transfer');
+  $('transaction-category-wrap').classList.toggle('hidden',type === 'transfer');
+
+  $('transaction-category').required = type !== 'transfer';
+  $('transaction-destination').required = type === 'transfer';
+
+  populateCategories();
+});
+
+$('transaction-form').addEventListener('submit',event => {
+  event.preventDefault();
+
+  const id = $('transaction-id').value;
+  const type = $('transaction-type').value;
+  const amount = Math.round(safeNumber($('transaction-amount').value)*100)/100;
+  const description = $('transaction-description').value.trim();
+  const date = $('transaction-date').value;
+  const walletId = $('transaction-wallet').value;
+
+  if (!description || !date || amount <= 0 || !walletId) {
+    return notify('Preencha a descrição, a data, o valor e a conta.');
+  }
+
+  if (!walletById(walletId)) {
+    return notify('Selecione uma conta válida.');
+  }
+
+  if (type === 'transfer') {
+    const destinationWalletId = $('transaction-destination').value;
+
+    if (!destinationWalletId || !walletById(destinationWalletId)) {
+      return notify('Selecione uma conta de destino válida.');
+    }
+
+    if (walletId === destinationWalletId) {
+      return notify('A conta de origem e a de destino precisam ser diferentes.');
+    }
+  }
+
+  const existing = id
+    ? transactions.find(item => item.id === id)
+    : null;
+
+  if (id && !existing) {
+    return notify('Não foi possível localizar a movimentação para edição.');
+  }
+
+  if (existing && existing.type === 'transfer' && type !== 'transfer' && existing.transferId) {
+    transactions = transactions.filter(item => item.transferId !== existing.transferId);
+  } else if (existing && existing.type !== 'transfer' && type === 'transfer') {
+    transactions = transactions.filter(item => item.id !== existing.id);
+  } else if (existing) {
+    transactions = transactions.filter(item => item.id !== existing.id);
+  }
+
+  const common = {
+    description,
+    amount,
+    date,
+    walletId,
+    tags:$('transaction-tags').value.trim(),
+    notes:$('transaction-notes').value.trim(),
+    createdAt:existing?.createdAt || new Date().toISOString()
+  };
+
+  if (type === 'transfer') {
+    const destinationWalletId = $('transaction-destination').value;
+    const transferId = existing?.transferId || uid('transfer');
+
+    transactions.push({
+      ...common,
+      id:uid('tx'),
+      type:'transfer',
+      category:'Transferência',
+      destinationWalletId,
+      transferId
+    });
+  } else {
+    transactions.push({
+      ...common,
+      id:existing?.id || uid('tx'),
+      type,
+      category:$('transaction-category').value,
+      destinationWalletId:'',
+      transferId:''
+    });
+  }
+
+  persist();
+  resetTransactionForm();
+  renderApp();
+  notify(id ? 'Movimentação atualizada.' : 'Movimentação salva.');
+});
+
+$('filter-search').addEventListener('input',renderTransactions);
+$('filter-month').addEventListener('change',renderTransactions);
+$('filter-type').addEventListener('change',renderTransactions);
+$('filter-wallet').addEventListener('change',renderTransactions);
+</script>
+<script>
+function updateInstallmentPreview() {
+  const amount = safeNumber($('agenda-amount')?.value);
+  const count = Math.max(1,Number($('agenda-installments')?.value || 1));
+  const preview = $('installment-preview');
+
+  if (!preview) return;
+
+  if (amount <= 0) {
+    preview.textContent = 'Informe o valor total para visualizar o parcelamento.';
     return;
   }
 
-  if(target.name==="transactions")transactions=entry.parsedValue;
-  if(target.name==="agenda")agenda=entry.parsedValue;
-  if(target.name==="wallets")wallets=entry.parsedValue;
-  if(target.name==="goals")goals=entry.parsedValue;
+  const cents = Math.round(amount*100);
+  const baseCents = Math.floor(cents/count);
+  const lastCents = cents - baseCents*(count-1);
 
-  populateSelectors();
-  resetTransactionForm();
-  renderApp();
-  scanLocalStorage();
-
-  const backupMessage=safetyKey?` Backup anterior guardado na chave ${safetyKey}.`:"";
-  alert(`Restauração concluída para ${targetKey}.${backupMessage}\n\nA chave de origem foi mantida.`);
-  pushNotification("Dados reconhecidos e restaurados.");
+  preview.textContent = count === 1
+    ? `Valor do compromisso: ${money(amount)}.`
+    : `${count} parcelas: ${money(baseCents/100)} cada, com a última parcela de ${money(lastCents/100)}. Total: ${money(cents/100)}.`;
 }
+
+$('agenda-amount').addEventListener('input',updateInstallmentPreview);
+$('agenda-installments').addEventListener('change',updateInstallmentPreview);
+
+$('agenda-type').addEventListener('change',populateCategories);
+
+function resetAgendaForm() {
+  $('agenda-form').reset();
+  $('agenda-id').value = '';
+  $('agenda-date').value = localDate();
+  $('agenda-installments').value = '1';
+  $('agenda-frequency').value = 'once';
+  $('agenda-submit').textContent = 'Salvar compromisso';
+  $('agenda-cancel').classList.add('hidden');
+  populateWalletSelects();
+  populateCategories();
+  updateInstallmentPreview();
+}
+
+function renderAgenda() {
+  const list = $('agenda-list');
+  if (!list) return;
+
+  const items = [...agenda].sort((a,b) =>
+    String(a.date).localeCompare(String(b.date))
+  );
+
+  list.innerHTML = items.length ? items.map(item => {
+    const due = item.date < localDate();
+    const recurring = item.frequency === 'monthly';
+
+    return `
+      <div class="item">
+        <div class="item-main">
+          <strong>${escapeHTML(item.description)}</strong>
+          <p>${escapeHTML(formatDate(item.date))} · ${escapeHTML(item.category)}</p>
+          <p>${escapeHTML(walletName(item.walletId))}</p>
+          <p>${item.installments > 1
+            ? `Parcela ${Math.min(item.currentInstallment,item.installments)} de ${item.installments}`
+            : recurring ? 'Recorrência mensal' : 'Pagamento único'}</p>
+          ${item.notes ? `<p>${escapeHTML(item.notes)}</p>` : ''}
+        </div>
+        <div class="item-right">
+          <span class="amount ${item.type === 'income' ? 'positive' : 'negative'}">${escapeHTML(money(getAgendaInstallmentAmount(item)))}</span>
+          <span class="badge ${due ? 'bad' : recurring ? 'warn' : ''}">${due ? 'Vencido' : recurring ? 'Recorrente' : 'Pendente'}</span>
+          <div class="btn-row">
+            <button class="btn good small" onclick="settleAgenda('${escapeHTML(item.id)}')">Liquidar</button>
+            <button class="btn secondary small" onclick="editAgenda('${escapeHTML(item.id)}')">Editar</button>
+            <button class="btn danger small" onclick="deleteAgenda('${escapeHTML(item.id)}')">Excluir</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('') : '<div class="empty">Nenhum compromisso agendado.</div>';
+
+  renderUpcoming();
+}
+
+function getAgendaInstallmentAmount(item) {
+  const count = Math.max(1,item.installments || 1);
+  const totalCents = Math.round(item.amount*100);
+
+  if (count <= 1) return totalCents/100;
+
+  const baseCents = Math.floor(totalCents/count);
+  const lastCents = totalCents - baseCents*(count-1);
+  const current = Math.min(item.currentInstallment || 1,count);
+
+  return (current === count ? lastCents : baseCents)/100;
+}
+
+function renderUpcoming() {
+  const container = $('upcoming-list');
+  if (!container) return;
+
+  const today = localDate();
+  const upcoming = [...agenda]
+    .filter(item => item.date <= dateAddMonths(today,1))
+    .sort((a,b) => String(a.date).localeCompare(String(b.date)))
+    .slice(0,5);
+
+  container.innerHTML = upcoming.length ? upcoming.map(item => `
+    <div class="item">
+      <div class="item-main">
+        <strong>${escapeHTML(item.description)}</strong>
+        <p>${escapeHTML(formatDate(item.date))} · ${escapeHTML(item.type === 'income' ? 'Receita prevista' : 'Despesa prevista')}</p>
+      </div>
+      <div class="item-right">
+        <span class="amount ${item.type === 'income' ? 'positive' : 'negative'}">${escapeHTML(money(getAgendaInstallmentAmount(item)))}</span>
+        <button class="btn good small" onclick="settleAgenda('${escapeHTML(item.id)}')">Liquidar</button>
+      </div>
+    </div>
+  `).join('') : '<div class="empty">Nenhum compromisso para os próximos dias.</div>';
+}
+
+function editAgenda(id) {
+  const item = agenda.find(entry => entry.id === id);
+  if (!item) return notify('Compromisso não encontrado.');
+
+  navigate('launch');
+  setLaunchMode('agenda');
+
+  $('agenda-id').value = item.id;
+  $('agenda-type').value = item.type;
+  $('agenda-date').value = item.date;
+  $('agenda-description').value = item.description;
+  $('agenda-amount').value = item.amount;
+  $('agenda-notes').value = item.notes;
+  $('agenda-installments').value = String(item.installments);
+  $('agenda-frequency').value = item.frequency;
+
+  populateCategories();
+  populateWalletSelects();
+
+  $('agenda-category').value = item.category;
+  $('agenda-wallet').value = item.walletId;
+  $('agenda-submit').textContent = 'Salvar alterações';
+  $('agenda-cancel').classList.remove('hidden');
+
+  updateInstallmentPreview();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteAgenda(id) {
+  const item = agenda.find(entry => entry.id === id);
+  if (!item) return;
+
+  if (!confirm(`Excluir o compromisso "${item.description}"?`)) return;
+
+  agenda = agenda.filter(entry => entry.id !== id);
+  persist();
+  renderApp();
+  notify('Compromisso excluído.');
+}
+
+$('agenda-form').addEventListener('submit',event => {
+  event.preventDefault();
+
+  const id = $('agenda-id').value;
+  const amount = Math.round(safeNumber($('agenda-amount').value)*100)/100;
+  const description = $('agenda-description').value.trim();
+  const date = $('agenda-date').value;
+  const walletId = $('agenda-wallet').value;
+  const installments = Math.max(1,Math.min(24,Number($('agenda-installments').value || 1)));
+
+  if (!description || !date || amount <= 0 || !walletById(walletId)) {
+    return notify('Preencha corretamente os dados do compromisso.');
+  }
+
+  const existing = id ? agenda.find(item => item.id === id) : null;
+
+  if (id && !existing) {
+    return notify('Compromisso não encontrado para edição.');
+  }
+
+  const record = {
+    id:existing?.id || uid('ag'),
+    type:$('agenda-type').value,
+    description,
+    amount,
+    category:$('agenda-category').value,
+    walletId,
+    date,
+    notes:$('agenda-notes').value.trim(),
+    frequency:$('agenda-frequency').value,
+    installments,
+    currentInstallment:existing?.currentInstallment || 1,
+    cycle:existing?.cycle || 0,
+    createdAt:existing?.createdAt || new Date().toISOString()
+  };
+
+  if (existing) {
+    agenda = agenda.map(item => item.id === id ? record : item);
+  } else {
+    agenda.push(record);
+  }
+
+  persist();
+  resetAgendaForm();
+  renderApp();
+  notify(existing ? 'Compromisso atualizado.' : 'Compromisso salvo.');
+});
+
+function settleAgenda(id) {
+  const item = agenda.find(entry => entry.id === id);
+  if (!item) return notify('Compromisso não encontrado.');
+
+  const amount = getAgendaInstallmentAmount(item);
+  const installmentNumber = item.currentInstallment || 1;
+
+  const label = item.installments > 1
+    ? `${item.description} (${installmentNumber}/${item.installments})`
+    : item.description;
+
+  if (!confirm(`Confirmar a liquidação de "${label}" no valor de ${money(amount)}?`)) return;
+
+  const tx = {
+    id:uid('tx'),
+    type:item.type,
+    description:label,
+    amount,
+    category:item.category,
+    walletId:item.walletId,
+    destinationWalletId:'',
+    date:item.date,
+    tags:'',
+    notes:item.notes,
+    transferId:'',
+    agendaId:item.id,
+    installment:installmentNumber,
+    createdAt:new Date().toISOString()
+  };
+
+  transactions.push(tx);
+
+  if (item.installments > 1 && installmentNumber < item.installments) {
+    item.currentInstallment = installmentNumber + 1;
+    item.date = dateAddMonths(item.date,1);
+  } else if (item.frequency === 'monthly') {
+    item.currentInstallment = 1;
+    item.cycle = (item.cycle || 0) + 1;
+    item.date = dateAddMonths(item.date,1);
+  } else {
+    agenda = agenda.filter(entry => entry.id !== id);
+  }
+
+  persist();
+  renderApp();
+  notify('Compromisso liquidado e movimentação registrada.');
+}
+
+function resetWalletForm() {
+  $('wallet-form').reset();
+  $('wallet-id').value = '';
+  $('wallet-opening').value = '0';
+  $('wallet-submit').textContent = 'Adicionar conta';
+  $('wallet-cancel').classList.add('hidden');
+}
+
+function renderWallets() {
+  populateWalletSelects();
+
+  const summary = $('wallet-summary');
+  const list = $('wallet-list');
+
+  if (!summary || !list) return;
+
+  summary.innerHTML = `
+    <div class="metric">
+      <label>Quantidade de contas</label>
+      <strong>${wallets.length}</strong>
+    </div>
+    <div class="metric">
+      <label>Saldo total</label>
+      <strong class="money">${escapeHTML(money(allBalances()))}</strong>
+    </div>
+  `;
+
+  list.innerHTML = wallets.length ? wallets.map(wallet => {
+    const balance = walletBalance(wallet.id);
+
+    return `
+      <div class="item">
+        <div class="item-main">
+          <strong>▤ ${escapeHTML(wallet.name)}</strong>
+          <p>${escapeHTML(walletTypeLabel(wallet.type))}</p>
+          <p>Saldo inicial: ${escapeHTML(money(wallet.opening))}</p>
+        </div>
+        <div class="item-right">
+          <span class="amount ${balance < 0 ? 'negative' : 'positive'}">${escapeHTML(money(balance))}</span>
+          <div class="btn-row">
+            <button class="btn secondary small" onclick="editWallet('${escapeHTML(wallet.id)}')">Editar</button>
+            <button class="btn danger small" onclick="deleteWallet('${escapeHTML(wallet.id)}')">Excluir</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('') : '<div class="empty">Nenhuma conta cadastrada.</div>';
+}
+
+function walletTypeLabel(type) {
+  const labels = {
+    checking:'Conta corrente',
+    cash:'Dinheiro em espécie',
+    savings:'Poupança',
+    digital:'Conta digital',
+    other:'Outra conta'
+  };
+  return labels[type] || 'Outra conta';
+}
+
+function editWallet(id) {
+  const wallet = walletById(id);
+  if (!wallet) return notify('Conta não encontrada.');
+
+  $('wallet-id').value = wallet.id;
+  $('wallet-name').value = wallet.name;
+  $('wallet-type').value = wallet.type;
+  $('wallet-opening').value = wallet.opening;
+  $('wallet-submit').textContent = 'Salvar alterações';
+  $('wallet-cancel').classList.remove('hidden');
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteWallet(id) {
+  const wallet = walletById(id);
+  if (!wallet) return;
+
+  if (wallets.length <= 1) {
+    return notify('Mantenha pelo menos uma conta cadastrada.');
+  }
+
+  const used = transactions.some(item =>
+    item.walletId === id || item.destinationWalletId === id
+  ) || agenda.some(item => item.walletId === id);
+
+  if (used) {
+    return notify('Esta conta possui movimentações ou compromissos vinculados. Edite ou remova esses registros antes de excluir a conta.');
+  }
+
+  if (!confirm(`Excluir a conta "${wallet.name}"?`)) return;
+
+  wallets = wallets.filter(item => item.id !== id);
+  persist();
+  renderApp();
+  notify('Conta excluída.');
+}
+
+$('wallet-form').addEventListener('submit',event => {
+  event.preventDefault();
+
+  const id = $('wallet-id').value;
+  const name = $('wallet-name').value.trim();
+  const opening = Math.round(safeNumber($('wallet-opening').value)*100)/100;
+
+  if (!name) return notify('Informe o nome da conta.');
+
+  const existing = id ? walletById(id) : null;
+
+  if (id && !existing) {
+    return notify('Conta não encontrada para edição.');
+  }
+
+  if (wallets.some(wallet =>
+    wallet.name.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR') &&
+    wallet.id !== id
+  )) {
+    return notify('Já existe uma conta com esse nome.');
+  }
+
+  const record = {
+    id:existing?.id || uid('wallet'),
+    name,
+    type:$('wallet-type').value,
+    opening,
+    createdAt:existing?.createdAt || new Date().toISOString()
+  };
+
+  if (existing) {
+    wallets = wallets.map(wallet => wallet.id === id ? record : wallet);
+  } else {
+    wallets.push(record);
+  }
+
+  persist();
+  resetWalletForm();
+  renderApp();
+  notify(existing ? 'Conta atualizada.' : 'Conta adicionada.');
+});
+
+$('transfer-form').addEventListener('submit',event => {
+  event.preventDefault();
+
+  const from = $('transfer-from').value;
+  const to = $('transfer-to').value;
+  const amount = Math.round(safeNumber($('transfer-amount').value)*100)/100;
+  const date = $('transfer-date').value;
+
+  if (!walletById(from) || !walletById(to) || from === to) {
+    return notify('Selecione contas de origem e destino diferentes.');
+  }
+
+  if (amount <= 0 || !date) {
+    return notify('Informe um valor válido e a data da transferência.');
+  }
+
+  const transferId = uid('transfer');
+  const description = $('transfer-description').value.trim() || 'Transferência entre contas';
+
+  transactions.push({
+    id:uid('tx'),
+    type:'transfer',
+    description,
+    amount,
+    category:'Transferência',
+    walletId:from,
+    destinationWalletId:to,
+    date,
+    tags:'',
+    notes:'',
+    transferId,
+    agendaId:'',
+    installment:0,
+    createdAt:new Date().toISOString()
+  });
+
+  persist();
+  $('transfer-form').reset();
+  $('transfer-date').value = localDate();
+  renderApp();
+  notify('Transferência registrada.');
+});
+</script>
+<script>
+/* =========================
+   RELATÓRIOS FINANCEIROS
+========================= */
+
+function getReportTransactions() {
+  const start = $('report-start').value;
+  const end = $('report-end').value;
+  const wallet = $('report-wallet').value;
+
+  return transactions.filter(item => {
+    if (start && item.date < start) return false;
+    if (end && item.date > end) return false;
+
+    if (wallet && wallet !== 'all') {
+      const belongs =
+        item.walletId === wallet ||
+        (item.type === 'transfer' && item.destinationWalletId === wallet);
+
+      if (!belongs) return false;
+    }
+
+    return true;
+  }).sort((a,b) => {
+    const order = String(b.date).localeCompare(String(a.date));
+    return order || String(b.createdAt).localeCompare(String(a.createdAt));
+  });
+}
+
+function renderReport() {
+  if (!$('report-income')) return;
+
+  const startInput = $('report-start');
+  const endInput = $('report-end');
+
+  if (!startInput.value && !endInput.value) {
+    const now = new Date();
+    startInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    endInput.value = localDate();
+  }
+
+  const start = startInput.value;
+  const end = endInput.value;
+
+  if (start && end && start > end) {
+    $('report-transaction-list').innerHTML =
+      '<div class="empty">A data inicial não pode ser posterior à data final.</div>';
+    return;
+  }
+
+  const records = getReportTransactions();
+  const financial = records.filter(item => item.type !== 'transfer');
+
+  const income = financial
+    .filter(item => item.type === 'income')
+    .reduce((sum,item) => sum + item.amount,0);
+
+  const expense = financial
+    .filter(item => item.type === 'expense')
+    .reduce((sum,item) => sum + item.amount,0);
+
+  const result = income - expense;
+
+  $('report-income').textContent = money(income);
+  $('report-expense').textContent = money(expense);
+  $('report-result').textContent = money(result);
+  $('report-result').className = 'money ' + (result < 0 ? 'negative' : 'positive');
+  $('report-count').textContent = records.length;
+
+  $('print-period').textContent =
+    `Período: ${start ? formatDate(start) : 'início'} até ${end ? formatDate(end) : 'hoje'}`;
+
+  const categories = {};
+
+  financial.filter(item => item.type === 'expense').forEach(item => {
+    categories[item.category] = (categories[item.category] || 0) + item.amount;
+  });
+
+  const sortedCategories = Object.entries(categories).sort((a,b) => b[1]-a[1]);
+  const totalExpenses = sortedCategories.reduce((sum,item) => sum + item[1],0);
+
+  $('report-category-list').innerHTML = sortedCategories.length
+    ? sortedCategories.map(([category,amount]) => {
+        const percentage = totalExpenses > 0 ? amount / totalExpenses * 100 : 0;
+
+        return `
+          <div class="item">
+            <div class="item-main">
+              <strong>${escapeHTML(category)}</strong>
+              <div class="barline">
+                <span style="width:${Math.max(0,Math.min(100,percentage))}%"></span>
+              </div>
+              <p>${percentage.toLocaleString('pt-BR',{maximumFractionDigits:1})}% das despesas</p>
+            </div>
+            <div class="item-right">
+              <span class="amount negative">${escapeHTML(money(amount))}</span>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<div class="empty">Nenhuma despesa no período selecionado.</div>';
+
+  $('report-transaction-list').innerHTML = records.length
+    ? records.map(item => transactionCard(item)).join('')
+    : '<div class="empty">Nenhuma movimentação encontrada no período.</div>';
+}
+
+function downloadFile(filename,content,mimeType) {
+  const blob = new Blob([content],{type:mimeType});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
+
+function csvEscape(value) {
+  const text = String(value ?? '');
+  return '"' + text.replace(/"/g,'""') + '"';
+}
+
+function downloadCSV(filename,rows) {
+  const csv = '\uFEFF' + rows.map(row =>
+    row.map(csvEscape).join(';')
+  ).join('\r\n');
+
+  downloadFile(filename,csv,'text/csv;charset=utf-8;');
+}
+
+function transactionCSVRows(records) {
+  const rows = [[
+    'Data',
+    'Descrição',
+    'Tipo',
+    'Categoria',
+    'Conta de origem',
+    'Conta de destino',
+    'Valor',
+    'Tags',
+    'Observações'
+  ]];
+
+  records.forEach(item => {
+    rows.push([
+      item.date,
+      item.description,
+      transactionTypeLabel(item.type),
+      item.category,
+      walletName(item.walletId),
+      item.type === 'transfer' ? walletName(item.destinationWalletId) : '',
+      item.amount.toFixed(2).replace('.',','),
+      item.tags,
+      item.notes
+    ]);
+  });
+
+  return rows;
+}
+
+function exportTransactionsCSV() {
+  downloadCSV(
+    `gbfinance-movimentacoes-${localDate()}.csv`,
+    transactionCSVRows(getReportTransactionsForExport())
+  );
+
+  notify('Arquivo CSV preparado para exportação.');
+}
+
+function getReportTransactionsForExport() {
+  return [...transactions].sort((a,b) => String(a.date).localeCompare(String(b.date)));
+}
+
+function exportReportCSV() {
+  downloadCSV(
+    `gbfinance-relatorio-${localDate()}.csv`,
+    transactionCSVRows(getReportTransactions())
+  );
+
+  notify('Relatório CSV preparado para exportação.');
+}
+
+/* =========================
+   BACKUP E RESTAURAÇÃO
+========================= */
+
+function exportBackup() {
+  const backup = {
+    app:'GbFinance Mobile Pro',
+    version:2,
+    exportedAt:new Date().toISOString(),
+    transactions,
+    agenda,
+    wallets,
+    settings:{
+      theme:localStorage.getItem(STORAGE.theme) || 'dark',
+      privacy:localStorage.getItem(STORAGE.privacy) || 'off',
+      notifications:localStorage.getItem(STORAGE.notifications) || 'off'
+    }
+  };
+
+  downloadFile(
+    `gbfinance-backup-${localDate()}.json`,
+    JSON.stringify(backup,null,2),
+    'application/json;charset=utf-8'
+  );
+
+  notify('Backup exportado. Guarde o arquivo em um local seguro.');
+}
+
+$('backup-file').addEventListener('change', async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const content = await file.text();
+    const data = JSON.parse(content);
+
+    const rawTransactions = data.transactions || data.transacoes;
+    const rawAgenda = data.agenda || data.compromissos;
+    const rawWallets = data.wallets || data.contas;
+
+    if (
+      !Array.isArray(rawTransactions) ||
+      !Array.isArray(rawAgenda) ||
+      !Array.isArray(rawWallets)
+    ) {
+      throw new Error(
+        'Estrutura inválida. O backup precisa conter movimentações, agenda e contas.'
+      );
+    }
+
+    const parseAmount = value => {
+      if (typeof value === 'number') return value;
+      if (value == null || value === '') return 0;
+
+      let s = String(value).trim().replace(/[R$\s]/g, '');
+
+      if (s.includes(',')) {
+        s = s.replace(/\./g, '').replace(',', '.');
+      }
+
+      const n = Number(s);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const mapType = value => {
+      const t = String(value || '').toLowerCase().trim();
+
+      if (
+        t.includes('transfer') ||
+        t.includes('transferência') ||
+        t.includes('transferencia')
+      ) return 'transfer';
+
+      if (
+        t.includes('receita') ||
+        t.includes('entrada') ||
+        t.includes('income')
+      ) return 'income';
+
+      if (
+        t.includes('despesa') ||
+        t.includes('saída') ||
+        t.includes('saida') ||
+        t.includes('expense')
+      ) return 'expense';
+
+      return t === 'income' || t === 'transfer' ? t : 'expense';
+    };
+
+    const newWallets = rawWallets.map(w => ({
+      ...w,
+      id: String(w.id ?? crypto.randomUUID()),
+      name: String(w.name ?? w.nome ?? 'Minha conta'),
+      type: w.type ?? 'checking',
+      initial: parseAmount(w.initial ?? w.saldoInicial ?? 0)
+    }));
+
+    const walletIds = new Set(newWallets.map(w => w.id));
+    const defaultWallet = newWallets[0]?.id;
+
+    const newTransactions = rawTransactions.map(t => {
+      const type = mapType(t.type ?? t.tipo);
+
+      const originalWallet = String(
+        t.walletId ?? t.wallet ?? t.contaId ?? defaultWallet ?? ''
+      );
+
+      const destinationWallet = String(
+        t.destinationWalletId ??
+        t.destinationWallet ??
+        t.contaDestino ??
+        ''
+      );
+
+      return {
+        ...t,
+        id: String(t.id ?? crypto.randomUUID()),
+        description: String(t.description ?? t.desc ?? t.descricao ?? 'Movimentação'),
+        amount: parseAmount(t.amount ?? t.valor),
+        type,
+        category: String(t.category ?? t.cat ?? t.categoria ?? 'Outros'),
+        walletId: walletIds.has(originalWallet) ? originalWallet : defaultWallet,
+        destinationWalletId: destinationWallet,
+        date: String(t.date ?? t.data ?? t.venc ?? localDate()).slice(0, 10),
+        tags: t.tags ?? '',
+        notes: String(t.notes ?? t.observacoes ?? '')
+      };
+    });
+
+    const newAgenda = rawAgenda.map(a => ({
+      ...a,
+      id: String(a.id ?? crypto.randomUUID()),
+      description: String(a.description ?? a.desc ?? a.descricao ?? 'Compromisso'),
+      amount: parseAmount(a.amount ?? a.valor),
+      type: mapType(a.type ?? a.tipo),
+      date: String(a.date ?? a.venc ?? a.data ?? localDate()).slice(0, 10),
+      status: a.status ?? 'pending'
+    }));
+
+    const confirmed = confirm(
+      `Backup encontrado:\n\n` +
+      `• ${newTransactions.length} movimentações\n` +
+      `• ${newAgenda.length} compromissos\n` +
+      `• ${newWallets.length} contas\n\n` +
+      `Os dados atuais serão substituídos. Deseja continuar?`
+    );
+
+    if (!confirmed) return;
+
+    wallets = newWallets;
+    transactions = newTransactions;
+    agenda = newAgenda;
+
+    persist();
+    applySettings();
+    renderApp();
+
+    notify('Backup importado. Confira os saldos e as movimentações.');
+  } catch (error) {
+    console.error('Erro ao importar backup:', error);
+    alert('Falha ao importar backup:\n' + error.message);
+  } finally {
+    event.target.value = '';
+  }
+});
+
+/* =========================
+   TEMA E PRIVACIDADE
+========================= */
+
+function applySettings() {
+  const theme = localStorage.getItem(STORAGE.theme) || 'dark';
+  privacyEnabled = localStorage.getItem(STORAGE.privacy) === 'on';
+  notificationEnabled = localStorage.getItem(STORAGE.notifications) === 'on';
+
+  document.body.classList.toggle('light-theme',theme === 'light');
+  document.body.classList.toggle('privacy',privacyEnabled);
+
+  if ($('theme-setting')) $('theme-setting').value = theme;
+  if ($('privacy-setting')) $('privacy-setting').value = privacyEnabled ? 'on' : 'off';
+  if ($('notifications-setting')) {
+    $('notifications-setting').value = notificationEnabled ? 'on' : 'off';
+  }
+
+  $('privacy-toggle').textContent = privacyEnabled ? '◎' : '◉';
+}
+
+function togglePrivacy() {
+  privacyEnabled = !privacyEnabled;
+  localStorage.setItem(STORAGE.privacy,privacyEnabled ? 'on' : 'off');
+  applySettings();
+}
+
+async function saveSettings() {
+  const theme = $('theme-setting').value;
+  const privacy = $('privacy-setting').value;
+  const notifications = $('notifications-setting').value;
+
+  localStorage.setItem(STORAGE.theme,theme);
+  localStorage.setItem(STORAGE.privacy,privacy);
+  localStorage.setItem(STORAGE.notifications,notifications);
+
+  if (notifications === 'on') {
+    if (!('Notification' in window)) {
+      localStorage.setItem(STORAGE.notifications,'off');
+      notify('Este navegador não oferece suporte às notificações.');
+    } else {
+      try {
+        const permission = await Notification.requestPermission();
+
+        if (permission !== 'granted') {
+          localStorage.setItem(STORAGE.notifications,'off');
+          notify('Permissão de notificações não concedida.');
+        } else {
+          notify('Permissão de notificações ativada.');
+        }
+      } catch {
+        localStorage.setItem(STORAGE.notifications,'off');
+        notify('Não foi possível solicitar a permissão de notificações.');
+      }
+    }
+  }
+
+  applySettings();
+  renderDashboard();
+  notify('Configurações salvas.');
+}
+
+function showNotifications() {
+  const today = localDate();
+
+  const overdue = agenda.filter(item => item.date < today).length;
+  const dueToday = agenda.filter(item => item.date === today).length;
+
+  if (!overdue && !dueToday) {
+    notify('Você não possui compromissos vencidos ou com vencimento hoje.');
+    return;
+  }
+
+  const messages = [];
+
+  if (overdue) messages.push(`${overdue} compromisso(s) vencido(s).`);
+  if (dueToday) messages.push(`${dueToday} compromisso(s) vencem hoje.`);
+
+  notify(messages.join(' '),6000);
+
+  if (notificationEnabled &&
+      'Notification' in window &&
+      Notification.permission === 'granted') {
+    try {
+      new Notification('GbFinance Mobile Pro',{
+        body:messages.join(' ')
+      });
+    } catch (error) {
+      console.warn('Notificação do navegador indisponível.',error);
+    }
+  }
+}
+
+function renderSettings() {
+  applySettings();
+}
+
+/* =========================
+   DITADO POR VOZ
+========================= */
+
+function startVoiceInput() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    notify('Ditado por voz indisponível neste navegador. Você pode digitar os dados manualmente.');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'pt-BR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  notify('Fale a descrição da movimentação.');
+
+  recognition.onresult = event => {
+    const transcript = event.results?.[0]?.[0]?.transcript?.trim();
+
+    if (!transcript) {
+      notify('Não foi possível reconhecer sua fala.');
+      return;
+    }
+
+    $('transaction-description').value = transcript;
+
+    notify('Descrição preenchida. Confira os dados e o valor antes de salvar.');
+    $('transaction-description').focus();
+  };
+
+  recognition.onerror = event => {
+    notify('Falha no reconhecimento de voz: ' + event.error);
+  };
+
+  try {
+    recognition.start();
+  } catch {
+    notify('Não foi possível iniciar o reconhecimento de voz.');
+  }
+}
+
+/* =========================
+   APAGAR DADOS
+========================= */
+
+function resetAllData() {
+  const confirmation = prompt(
+    'Esta ação apagará todas as movimentações, contas e compromissos deste aplicativo.\n\n' +
+    'Para confirmar, digite APAGAR.'
+  );
+
+  if (confirmation !== 'APAGAR') {
+    notify('Operação cancelada.');
+    return;
+  }
+
+  transactions = [];
+  agenda = [];
+  wallets = DEFAULT_WALLETS.map(wallet => ({...wallet}));
+
+  persist();
+  resetTransactionForm();
+  resetAgendaForm();
+  resetWalletForm();
+
+  renderApp();
+  navigate('home');
+
+  notify('Dados financeiros apagados. As configurações visuais foram mantidas.');
+}
+
+/* =========================
+   INICIALIZAÇÃO
+========================= */
+
+function initializeApp() {
+  $('transaction-date').value = localDate();
+  $('agenda-date').value = localDate();
+  $('transfer-date').value = localDate();
+
+  const now = new Date();
+  const firstDay = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+
+  $('report-start').value = firstDay;
+  $('report-end').value = localDate();
+
+  loadData();
+  applySettings();
+
+  $('transaction-type').dispatchEvent(new Event('change'));
+  $('agenda-type').dispatchEvent(new Event('change'));
+
+  renderApp();
+  updateInstallmentPreview();
+
+  $('report-start').addEventListener('change',renderReport);
+  $('report-end').addEventListener('change',renderReport);
+  $('report-wallet').addEventListener('change',renderReport);
+  window.addEventListener('focus',() => {
+    renderDashboard();
+  });
+}
+document.addEventListener('DOMContentLoaded',initializeApp);
 </script>
 </body>
 </html>
